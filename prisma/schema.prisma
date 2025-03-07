@@ -1,0 +1,207 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  id                   Int                      @id @default(autoincrement())
+  name                 String                   @db.VarChar(30)
+  email                String                   @db.VarChar(60) @unique
+  password             String
+  telp                 String                   @db.VarChar(20) @unique
+  admin_id             Int                      @unique
+  master_id            Int                      @unique
+  jamaah_id            Int                      @unique
+  isVerified           Boolean                  @default(false)
+  tokenVerification    String                   @unique
+
+  admin                Admins                   @relation(fields: [admin_id], references: [id])
+  master               Masters                  @relation(fields: [master_id], references: [id])
+  jamaah               Jamaahs                  @relation(fields: [jamaah_id], references: [id])
+} 
+
+model Admins {
+  id                   Int                      @id  @default(autoincrement())
+  status               Boolean
+  role                 AdminRole
+
+  users                Users[]
+  kas_payment          Kas[]
+}
+
+model Masters {
+  id                   Int                      @id @default(autoincrement())
+  status               Boolean
+    
+  users                Users[]
+}
+
+model Jamaahs {
+  id                   Int                      @id @default(autoincrement())
+  masjid_id            Int
+
+  users                Users[]
+  masjid               Masjids                  @relation(fields: [masjid_id], references: [id])
+}
+
+model Masjids {
+  id                   Int                      @id @default(autoincrement())
+  name                 String
+  location             String
+  subdistrict_id       Int 
+  cityorregency_id     Int
+  province_id          Int
+  ward_id              Int
+
+  jamaah               Jamaahs[]
+  activityinformations ActivityInformations[]
+  incomes              Incomes[]
+  incomes_sources      IncomeSources[]
+  outcomes             Outcomes[]
+  outcomes_reason      OutcomeReason[]
+  assets               Assets[]
+  payment              Payment[]
+  accountBank          AccountBank[]
+  purpose              PurposeAccountBank[]
+}
+
+model Incomes {
+  id                   Int                     @id @default(autoincrement())
+  amount               Float                  
+  date                 DateTime
+  masjid_id            Int
+  source_id            Int
+
+  masjid               Masjids                @relation(fields: [masjid_id], references: [id])
+  source               IncomeSources          @relation(fields: [source_id], references: [id])
+}
+
+model IncomeSources {
+  id                   Int                    @id @default(autoincrement())
+  masjid_id            Int                     
+  name                 String
+
+  masjid               Masjids                @relation(fields: [masjid_id], references: [id])
+  income               Incomes[]
+}
+
+model Outcomes {
+  id                   Int                    @id @default(autoincrement())
+  amount               Float             
+  date                 DateTime
+  reason_id            Int
+  masjid_id            Int
+
+  masjid               Masjids                @relation(fields: [masjid_id], references: [id])
+  reason               OutcomeReason          @relation(fields: [reason_id], references: [id])
+}
+
+model OutcomeReason {
+  id                   Int                    @id @default(autoincrement())
+  masjid_id            Int                     
+  name                 String
+
+  masjid               Masjids                @relation(fields: [masjid_id], references: [id])
+  outcomes             Outcomes[]
+}
+
+model ActivityInformations {
+  id                   Int                     @id @default(autoincrement())
+  date                 DateTime
+  address              String
+  image                String?
+  name                 String
+  description          String
+  pic                  String
+  document             String?
+  masjid_id            Int
+  video_documentation  String?
+
+  Masjid               Masjids                 @relation(fields: [masjid_id], references: [id])
+}
+
+model Assets {
+  id                   Int                     @id @default(autoincrement())
+  name                 String
+  amount               Int
+  unit                 String
+  masjid_id            Int
+  condition            Condition               
+
+  Masjid               Masjids                 @relation(fields: [masjid_id], references: [id])
+}
+
+model Kas {
+  id                   Int                     @id @default(autoincrement())
+  admin_id             Int
+  payment_id           String                  @unique
+
+  admin                Admins                  @relation(fields: [admin_id], references: [id])
+  payment              Payment                 @relation(fields: [payment_id], references: [id])
+}
+
+model Payment {
+  id                   String                  @unique
+  status               PaymentStatus
+  amount               Int
+  masjid_id            Int
+  qr_string            String
+  account_bank_id      Int?                 
+
+  masjid               Masjids                 @relation(fields: [masjid_id], references: [id])
+  accountBank          AccountBank?            @relation(fields: [account_bank_id], references: [id])
+  kas                  Kas?
+}
+
+model AccountBank {
+  id                   Int                     @id @default(autoincrement())
+  name                 String
+  bank                 String
+  account              String
+  alias_name           String
+  email                String
+  masjid_id            Int
+  purpose_id           Int
+
+  masjid               Masjids                 @relation(fields: [masjid_id], references: [id])
+  purpose              PurposeAccountBank      @relation(fields: [purpose_id], references: [id])
+  payment              Payment[]
+}
+
+model PurposeAccountBank {
+  id                   Int                     @id @default(autoincrement())
+  name                 String
+  masjid_id            Int
+
+  masjid               Masjids                 @relation(fields: [masjid_id], references: [id])
+  accountBank          AccountBank[]
+}
+
+enum AdminRole {
+  Ketua
+  Bendahara
+  Sekretaris
+  Marbot
+  Pengurus
+}
+
+enum Condition {
+  Baik
+  Sedang_diperbaiki
+  Rusak
+}
+
+enum PaymentStatus {
+  PAID
+  PENDING
+}
