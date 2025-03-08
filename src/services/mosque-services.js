@@ -60,21 +60,8 @@ const getMasjidId = async (user_id) => {
 }
 
 const changeTokenToMasjidId = async (masjid_id) => {
-  const mosques = await prismaClient.masjids.findMany({
-      select: {
-          id: true,
-      }
-  });
-
-  const findId = await Promise.all(mosques.map(async (value) => {
-    return {
-      id: value.id,
-      match: jwt.verify(String(value.id), masjid_id)
-    };
-  }));
-
-  const match = findId.find(value => value.match);
-  return match ? match.id : false;
+  const id = jwt.verify(masjid_id, process.env.SECRET_KEY);
+  return Number(id);
 }
 
 const getCrucialMosqueData = async (id) => {
@@ -111,6 +98,8 @@ const create = async (request) => {
             id: true
         }
     });
+
+    mosqueAdd.id = jwt.sign(String(mosqueAdd.id), process.env.SECRET_KEY)
 
     return mosqueAdd;
 }

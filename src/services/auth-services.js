@@ -1,6 +1,7 @@
 import { prismaClient } from "../application/database.js";
 import { validate } from "../validation/validation.js";
 import authValidation from "../validation/auth-validation.js";
+import mosqueServices from "./mosque-services.js";
 import bcrypt from 'bcrypt';
 import { ResponseError } from "../error/response-error.js";
 import jwt from 'jsonwebtoken';
@@ -79,6 +80,7 @@ const registerToken = async (request) => {
 const register = async (request) => {
     try {
         request = validate(authValidation.registerSchema, request);
+        const mosque_id = await mosqueServices.changeTokenToMasjidId(request.mosque_id)
     
         const admin = await prismaClient.admins.create({
             data: {
@@ -96,7 +98,7 @@ const register = async (request) => {
         });
     
         const jamaah = await prismaClient.jamaahs.create({
-            data: { masjid_id: request.mosque_id },
+            data: { masjid_id: mosque_id },
             select: { id: true }
         });
         

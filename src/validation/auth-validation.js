@@ -7,7 +7,7 @@ const registerSchema = Joi.object({
   telp: Joi.string().required(),
   isJamaah: Joi.boolean().required(),
   isAdmin: Joi.boolean().required(),
-  mosque_id: Joi.number().required(),
+  mosque_id: Joi.string().required(),
   token: Joi.string().required(),
 });
 
@@ -18,7 +18,7 @@ const makeTokenSchema = Joi.object({
   password: Joi.string().optional(),
   isJamaah: Joi.boolean().optional(),
   isAdmin: Joi.boolean().optional(),
-  mosque_id: Joi.number().optional()
+  mosque_id: Joi.string().optional()
 });
 
 const loginSchema = Joi.object({
