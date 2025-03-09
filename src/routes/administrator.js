@@ -25,7 +25,7 @@ const fileFilter = (req, file, callback) => {
   const allowedDocumentTypes = [
     "application/pdf",
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // docx
-  ];
+  ]; 
 
   if (file.fieldname === "image" && allowedImageTypes.includes(file.mimetype)) {
     callback(null, true);

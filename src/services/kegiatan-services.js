@@ -10,6 +10,7 @@ import jwt from 'jsonwebtoken'
 const createKegiatan = async (requestData, requestFiles) => {
   requestData = validate(createKegiatanSchema, requestData);
 
+  console.log(requestData);
   
   const masjidId = await mosqueServices.getMasjidId(requestData.user_id);
   if(masjidId.status) {
@@ -33,7 +34,7 @@ const createKegiatan = async (requestData, requestFiles) => {
       masjid_id: masjidId,
       image: imagePath,
       document: documentPath,
-      video_documentation: requestData.video || ""
+      video_documentation: requestData.video_documentation || ""
     }
   });
 
@@ -120,6 +121,7 @@ const detailKegiatan = async (request) => {
 }
 
 const editKegiatan = async (requestData, requestFiles) => {
+  console.log(requestData);
   requestData = validate(updateKegiatanSchema, requestData);
 
   const data = await prismaClient.activityInformations.findFirst({
@@ -165,7 +167,7 @@ const editKegiatan = async (requestData, requestFiles) => {
       masjid_id: data.masjid_id,
       image: imagePath,
       document: documentPath,
-      video_documentation: requestData.video || ""
+      video_documentation: requestData.video_documentation || ""
     }
   });
 
