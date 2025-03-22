@@ -21,7 +21,16 @@ const createAset = async (request) => {
     }
   });
 
-  if(saveAset) {
+  const createPengeluaran = await prismaClient.outcomes.create({
+    data: {
+      amount: request.price * request.amount,
+      date: new Date().toISOString(),
+      masjid_id: masjidId,
+      reason: request.name
+    }
+  });
+
+  if(saveAset && createPengeluaran) {
     return {
       message: "Aset Masjid berhasil didata",
       status: 200

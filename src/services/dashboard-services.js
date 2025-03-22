@@ -17,11 +17,7 @@ const report = async (request) => {
     select: {
       amount: true,
       date: true,
-      source: {
-        select: {
-          name: true
-        }
-      }
+      source: true
     }
   });
 
@@ -32,11 +28,7 @@ const report = async (request) => {
     select: {
       amount: true,
       date: true,
-      reason: {
-        select: {
-          name: true
-        }
-      }
+      reason: true
     }
   });
 
@@ -44,7 +36,7 @@ const report = async (request) => {
     const { source, ...rest } = value;
     return {
       ...rest,
-      description: source.name,
+      description: source,
       type: "Pemasukan"
     }
   });
@@ -53,7 +45,7 @@ const report = async (request) => {
     const { reason, ...rest } = value;
     return {
       ...rest,
-      description: reason.name,
+      description: reason,
       type: "Pengeluaran"
     }
   }));

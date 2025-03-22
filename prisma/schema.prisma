@@ -28,22 +28,27 @@ model Users {
   admin                Admins                   @relation(fields: [admin_id], references: [id])
   master               Masters                  @relation(fields: [master_id], references: [id])
   jamaah               Jamaahs                  @relation(fields: [jamaah_id], references: [id])
+  Loanings             LoaningBooks[]
 } 
 
 model Admins {
   id                   Int                      @id  @default(autoincrement())
-  status               Boolean
+  status               Boolean                  @default(false)
   role                 AdminRole
 
   users                Users[]
-  kas_payment          Kas[]
 }
 
 model Masters {
   id                   Int                      @id @default(autoincrement())
-  status               Boolean
+  status               Boolean                  @default(false)
     
   users                Users[]
+}
+
+model CriticsAndSuggestion {
+  id                   Int                      @id @default(autoincrement())
+  message              String
 }
 
 model Jamaahs {
@@ -70,9 +75,14 @@ model Masjids {
   outcomes             Outcomes[]
   outcomes_reason      OutcomeReason[]
   assets               Assets[]
-  payment              Payment[]
   accountBank          AccountBank[]
   purpose              PurposeAccountBank[]
+  mosqueArsips         MosqueArsips[]
+  mosqueLetterTemplate MosqueLetterTemplate[]
+  donation             Donation[]
+  animals              AnimalsQurban[]
+  books                Books[]
+
 }
 
 model Incomes {
@@ -80,10 +90,9 @@ model Incomes {
   amount               Float                  
   date                 DateTime
   masjid_id            Int
-  source_id            Int
+  source               String
 
   masjid               Masjids                @relation(fields: [masjid_id], references: [id])
-  source               IncomeSources          @relation(fields: [source_id], references: [id])
 }
 
 model IncomeSources {
@@ -92,18 +101,16 @@ model IncomeSources {
   name                 String
 
   masjid               Masjids                @relation(fields: [masjid_id], references: [id])
-  income               Incomes[]
 }
 
 model Outcomes {
   id                   Int                    @id @default(autoincrement())
   amount               Float             
   date                 DateTime
-  reason_id            Int
+  reason               String
   masjid_id            Int
 
   masjid               Masjids                @relation(fields: [masjid_id], references: [id])
-  reason               OutcomeReason          @relation(fields: [reason_id], references: [id])
 }
 
 model OutcomeReason {
@@ -112,7 +119,6 @@ model OutcomeReason {
   name                 String
 
   masjid               Masjids                @relation(fields: [masjid_id], references: [id])
-  outcomes             Outcomes[]
 }
 
 model ActivityInformations {
@@ -141,41 +147,69 @@ model Assets {
   Masjid               Masjids                 @relation(fields: [masjid_id], references: [id])
 }
 
-model Kas {
+model MosqueArsips {
   id                   Int                     @id @default(autoincrement())
-  admin_id             Int
-  payment_id           String                  @unique
+  title                String                  
+  masjid_id            Int
+  document             String
 
-  admin                Admins                  @relation(fields: [admin_id], references: [id])
-  payment              Payment                 @relation(fields: [payment_id], references: [id])
+  Masjid               Masjids                 @relation(fields: [masjid_id], references: [id])
 }
 
-model Payment {
-  id                   String                  @unique
-  status               PaymentStatus
-  amount               Int
+model MosqueLetterTemplate {
+  id                   Int                     @id @default(autoincrement())
   masjid_id            Int
-  qr_string            String
-  account_bank_id      Int?                 
+  document             String
+  type                 String
 
-  masjid               Masjids                 @relation(fields: [masjid_id], references: [id])
-  accountBank          AccountBank?            @relation(fields: [account_bank_id], references: [id])
-  kas                  Kas?
+  Masjid               Masjids                 @relation(fields: [masjid_id], references: [id])
+}
+
+model Donation {
+  id                   Int                     @id @default(autoincrement())
+  name                 String
+  masjid_id            Int
+  verified             Boolean                 @default(false)
+  amount               Int
+  image                String
+  type                 String
+
+  Masjid               Masjids                 @relation(fields: [masjid_id], references: [id])
+  Qurban               QurbanPayment[]
+}
+
+model AnimalsQurban {
+  id                   Int                     @id @default(autoincrement())
+  masjid_id            Int                     
+  name                 String
+  amount               Int
+  sell                 Int
+
+  Masjid               Masjids                 @relation(fields: [masjid_id], references: [id])
+  Transaction          QurbanPayment[]
+}
+
+model QurbanPayment {
+  id                   Int                     @id @default(autoincrement())
+  animal_id            Int                      
+  payment_id           Int
+
+  Payment              Donation                @relation(fields: [payment_id], references: [id])
+  Animal               AnimalsQurban           @relation(fields: [animal_id], references: [id])
 }
 
 model AccountBank {
   id                   Int                     @id @default(autoincrement())
   name                 String
+  image                String?
   bank                 String
-  account              String
+  account              String?
   alias_name           String
   email                String
   masjid_id            Int
-  purpose_id           Int
+  purpose              String
 
   masjid               Masjids                 @relation(fields: [masjid_id], references: [id])
-  purpose              PurposeAccountBank      @relation(fields: [purpose_id], references: [id])
-  payment              Payment[]
 }
 
 model PurposeAccountBank {
@@ -184,7 +218,26 @@ model PurposeAccountBank {
   masjid_id            Int
 
   masjid               Masjids                 @relation(fields: [masjid_id], references: [id])
-  accountBank          AccountBank[]
+}
+
+model Books {
+  id                   Int                     @id @default(autoincrement())
+  name                 String
+  description          String
+  isBorrow             Boolean                 @default(false)
+  masjid_id            Int
+
+  Masjid               Masjids                 @relation(fields: [masjid_id], references: [id])
+  Loaning              LoaningBooks[]
+}
+
+model LoaningBooks {
+  id                   Int                     @id @default(autoincrement())
+  users_id             Int
+  books_id             Int
+
+  User                 Users                   @relation(fields: [users_id], references: [id])
+  Book                 Books                   @relation(fields: [books_id], references: [id])
 }
 
 enum AdminRole {
@@ -193,6 +246,8 @@ enum AdminRole {
   Sekretaris
   Marbot
   Pengurus
+  Ustad
+  Donatur
 }
 
 enum Condition {

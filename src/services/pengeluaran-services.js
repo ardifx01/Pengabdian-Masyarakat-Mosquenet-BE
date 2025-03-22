@@ -76,10 +76,12 @@ const addOutcome = async (request) => {
     return masjidId
   }
 
+  const { reasons } = await getReason({user_id: request.user_id});
+
   const addMosqueOutcomes = await prismaClient.outcomes.create({
     data: {
       masjid_id: masjidId,
-      reason_id: request.reason_id,
+      reason: reasons.find(value => value.id === request.reason_id).name,
       amount: request.amount,
       date: new Date().toISOString()
     }
@@ -112,21 +114,14 @@ const getOutcome = async (request) => {
     select: {
       amount: true,
       date: true,
-      reason: {
-        select: {
-          id: true,
-          name: true
-        }
-      }
+      reason: true
     }
   });
-
-  const outcomes = getMosqueOutcome.map(value => ({...value, reason: value.reason.name, reason_id: value.reason.id}))
 
   return {
     message: "Daftar Pemasukan berhasil didapatkan!",
     status: 200,
-    outcomes: outcomes
+    outcomes: getMosqueOutcome
   };
 }
 

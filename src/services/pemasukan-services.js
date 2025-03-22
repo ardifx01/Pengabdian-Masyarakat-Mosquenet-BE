@@ -84,10 +84,16 @@ const addIncome = async (request) => {
     return masjidId
   }
 
+  const source = await prismaClient.incomeSources.findFirst({
+    where: {
+      id: request.source_id
+    }
+  });
+
   const addMosqueIncome = await prismaClient.incomes.create({
     data: {
       masjid_id: masjidId,
-      source_id: request.source_id,
+      source: source.name,
       amount: request.amount,
       date: new Date().toISOString()
     }
@@ -120,21 +126,14 @@ const getIncome = async (request) => {
     select: {
       amount: true,
       date: true,
-      source: {
-        select: {
-          id: true,
-          name: true
-        }
-      }
+      source: true
     }
   });
-
-  const incomes = getMosqueIncome.map(value => ({...value, source: value.source.name, source_id: value.source.id}))
 
   return {
     message: "Daftar Pemasukan berhasil didapatkan!",
     status: 200,
-    incomes: incomes
+    incomes: getMosqueIncome
   };
 }
 
