@@ -137,8 +137,7 @@ const getPurposeofAccountBank = async (req, res) => {
 
 const createAccountBank = async (req, res) => {
   try {
-    console.log(req.body);
-    const createAccountBankResponse = await accountBankServices.createAccount(req.body);
+    const createAccountBankResponse = await accountBankServices.createAccount(req.body, req.files);
     return res.status(createAccountBankResponse.status).json(createAccountBankResponse);
   } catch (e) {
     console.log(e);

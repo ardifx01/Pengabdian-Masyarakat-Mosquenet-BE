@@ -1,8 +1,8 @@
+import path from "path";
 import { prismaClient } from "../application/database.js";
 import accountBankValidation from "../validation/account-bank-validation.js"
 import { validate } from "../validation/validation.js"
 import mosqueServices from "./mosque-services.js";
-import axios from "axios";
 
 const createPurpose = async (request) => {
   request = validate(accountBankValidation.createPurposeSchema, request);
@@ -80,31 +80,8 @@ const getPurpose = async (request) => {
   }
 }
 
-const createAccount = async (request) => {
+const createAccount = async (request, requestFiles) => {
   request = validate(accountBankValidation.createAccountSchema, request);
-
-  const data = {
-    name: request.name,
-    account: request.account,
-    bank: request.bank,
-    alias_name: request.alias_name,
-    email: request.email
-  };
-
-  const token = Buffer.from(process.env.SERVER_KEY + ":").toString("base64");
-  
-  const createAccountResponses = await axios.post(
-    `${process.env.DISBURSEMENT_REQUEST_URL}/api/v2/beneficiaries`,
-    data,
-    {
-      headers: {
-        Authorization: `Basic ${token}`,
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "X-Idempotency-Key": `${new Date().getMinutes()}${new Date().getHours()}${request.purpose_id}${new Date().getSeconds()}`
-      }
-    }
-  );
 
   const purpose = await prismaClient.purposeAccountBank.findFirst({
     where: {
@@ -112,7 +89,12 @@ const createAccount = async (request) => {
     }
   });
 
-  if(createAccountResponses.data.status === "created" && purpose) {
+  if(purpose) {
+    const imagePath = requestFiles?.image ? path.join('transaction/images', requestFiles.image[0].filename) : "";
+
+    console.log("path: ",imagePath);
+    console.log("requestFiles: ", requestFiles);
+
     const saveAccount = await prismaClient.accountBank.create({
       data: {
         name: request.name,
@@ -121,7 +103,8 @@ const createAccount = async (request) => {
         alias_name: request.alias_name,
         email: request.email,
         masjid_id: purpose.masjid_id,
-        purpose_id: request.purpose_id
+        purpose: purpose.name,
+        image: imagePath
       }
     });
     
@@ -163,22 +146,16 @@ const getAccount = async (request) => {
       account: true,
       alias_name: true,
       email: true,
-      purpose: {
-        select: {
-          name: true
-        }
-      }
+      purpose: true,
+      image: true
     }
   });
 
-  if(purposes) {
+  if(accountBank) {
     return {
       message: "Daftar rekening bank berhasil didapatkan!",
       status: 200,
-      account_bank: {
-        ...accountBank,
-        purpose: accountBank.purpose.name
-      }
+      account_bank: accountBank
     };
   } else {
     return {

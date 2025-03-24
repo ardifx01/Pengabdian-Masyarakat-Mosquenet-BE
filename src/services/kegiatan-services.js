@@ -9,8 +9,6 @@ import jwt from 'jsonwebtoken'
 
 const createKegiatan = async (requestData, requestFiles) => {
   requestData = validate(createKegiatanSchema, requestData);
-
-  console.log(requestData);
   
   const masjidId = await mosqueServices.getMasjidId(requestData.user_id);
   if(masjidId.status) {

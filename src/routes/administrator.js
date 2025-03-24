@@ -51,17 +51,23 @@ adminRouter.post('/api/aset/edit/:id', adminController.asetUpdate);
 adminRouter.post('/api/aset/get', adminController.asetGet);
 adminRouter.post('/api/aset/delete/:id', adminController.asetDelete);
 
-adminRouter.post('/api/kegiatan/add', upload.fields([
-  { name: 'image', maxCount: 1 },
-  { name: 'document', maxCount: 1 }]),
+adminRouter.post(
+  '/api/kegiatan/add', 
+  upload.fields([
+    { name: 'image', maxCount: 1 },
+    { name: 'document', maxCount: 1 }
+  ]),
   adminController.kegiatanAdd
 );
 adminRouter.post('/api/kegiatan/get', adminController.kegiatanGet);
 adminRouter.post('/api/kegiatan/delete/:id', adminController.kegiatanDelete);
 adminRouter.get('/api/kegiatan/detail/:id', adminController.kegiatanDetail);
-adminRouter.post('/api/kegiatan/edit', upload.fields([
-  { name: 'image', maxCount: 1 },
-  { name: 'document', maxCount: 1 }]),
+adminRouter.post(
+  '/api/kegiatan/edit', 
+  upload.fields([
+    { name: 'image', maxCount: 1 },
+    { name: 'document', maxCount: 1 }
+  ]),
   adminController.kegiatanUpdate
 );
 

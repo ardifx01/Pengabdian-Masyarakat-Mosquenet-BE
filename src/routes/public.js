@@ -15,6 +15,8 @@ publicRouter.get('/api/mosque/kegiatan/:id', publicController.getKegiatan);
 publicRouter.get('/api/mosque/user/:id', publicController.getMosqueByJamaah);
 publicRouter.get('/api/mosque/id/:id', publicController.getMosqueById);
 
+publicRouter.post('/api/critics-suggestion', publicController.receiveCriticsAndSuggestion)
+
 export {
   publicRouter
 }

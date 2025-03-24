@@ -4,6 +4,7 @@ import subdistrict from "../../Data/subdistrict.js";
 import ward from "../../Data/ward.js";
 import mosqueServices from "../services/mosque-services.js";
 import kegiatanServices from "../services/kegiatan-services.js";
+import criticsSuggestionServices from "../services/critics-suggestion-services.js";
 
 const getProvinceList = (req, res) => {
     try {
@@ -103,6 +104,17 @@ const getKegiatan = async (req, res) => {
   }
 }
 
+const receiveCriticsAndSuggestion = async (req, res) => {
+  try {
+    const saveCriticsResponse = await criticsSuggestionServices.create(req.body);
+    return res.status(saveCriticsResponse.status).json(saveCriticsResponse);
+  } catch (e) {
+      return res.status(500).json({
+          message: "Kritik dan saran gagal terkirim. Coba lagi"
+      });
+  }
+}
+
 export default {
     getProvinceList,
     getCityOrRegencyList,
@@ -112,4 +124,5 @@ export default {
     getMosqueByJamaah,
     getMosqueById,
     getKegiatan,
+    receiveCriticsAndSuggestion
 }

@@ -19,6 +19,7 @@ app.use(cors({
 
 app.use("/activity/documents", express.static(path.join(__dirname, '../activity/documents')));
 app.use("/activity/images", express.static(path.join(__dirname, "../activity/images")));
+app.use("/transaction/images", express.static(path.join(__dirname, "../transaction/images")));
 
 app.options('*', cors());
 

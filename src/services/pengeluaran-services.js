@@ -80,7 +80,7 @@ const addOutcome = async (request) => {
 
   const addMosqueOutcomes = await prismaClient.outcomes.create({
     data: {
-      masjid_id: masjidId,
+      masjid_id: masjidId,  
       reason: reasons.find(value => value.id === request.reason_id).name,
       amount: request.amount,
       date: new Date().toISOString()
