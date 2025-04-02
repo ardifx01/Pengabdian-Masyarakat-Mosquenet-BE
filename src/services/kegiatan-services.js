@@ -119,7 +119,6 @@ const detailKegiatan = async (request) => {
 }
 
 const editKegiatan = async (requestData, requestFiles) => {
-  console.log(requestData);
   requestData = validate(updateKegiatanSchema, requestData);
 
   const data = await prismaClient.activityInformations.findFirst({

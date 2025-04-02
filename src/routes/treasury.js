@@ -6,17 +6,16 @@ import path from 'path';
 const treasuryRouter = new express.Router();
 
 const storage = multer.diskStorage({ 
-  destination: function (req, file, callback) {
-    const fileType = file.mimetype;
+  destination: function (_req, file, callback) {
     callback(null, path.join('transaction/images'));
   },
-  filename: function (req, file, callback) {
+  filename: function (_req, file, callback) {
     const fileName = Date.now() + "-" + Math.round(Math.random() * 1e9);
     callback(null, fileName + path.extname(file.originalname));
   },
 });
 
-const fileFilter = (req, file, callback) => {
+const fileFilter = (_req, file, callback) => {
   const allowedImageTypes = ["image/jpeg", "image/png"];
 
   if (file.fieldname === "image" && allowedImageTypes.includes(file.mimetype)) {

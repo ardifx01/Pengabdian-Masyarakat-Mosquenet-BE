@@ -4,3 +4,6 @@ node_modules
 
 /activity/documents/*
 /activity/images/*
+
+/archive/documents/*
+/archive/templates/*

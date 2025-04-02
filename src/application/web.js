@@ -9,6 +9,7 @@ import { leaderRouter } from "../routes/leader.js";
 import { treasuryRouter } from "../routes/treasury.js";
 import { adminRouter } from "../routes/administrator.js";
 import { midtransRouter } from "../routes/midtrans.js";
+import { secretaryRouter } from "../routes/secretary.js";
 
 dotenv.config();
 export const web = express.Router();
@@ -25,6 +26,7 @@ web.use(authRouter);
 web.use(publicRouter);
 web.use(leaderRouter);
 web.use(treasuryRouter);
+web.use(secretaryRouter);
 web.use(adminRouter);
 web.use(midtransRouter);
 
