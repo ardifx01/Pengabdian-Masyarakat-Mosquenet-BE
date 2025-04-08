@@ -7,3 +7,5 @@ node_modules
 
 /archive/documents/*
 /archive/templates/*
+
+/donations/images/*
