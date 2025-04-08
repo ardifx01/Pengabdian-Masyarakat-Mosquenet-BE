@@ -2,6 +2,7 @@ import pemasukanServices from "../services/pemasukan-services.js";
 import pengeluaranServices from "../services/pengeluaran-services.js";
 import dashboardServices from "../services/dashboard-services.js";
 import accountBankServices from "../services/account-bank-services.js";
+import donationServices from "../services/donation-services.js";
 
 const addPemasukanCategory = async (req, res) => {
   try {
@@ -159,6 +160,20 @@ const getAccountBank = async (req, res) => {
   }
 }
 
+const updateDonation = async (req, res) => {
+  try {
+    const changeDonationResponse = await donationServices.changeDonationStatus({
+      ...req.params,
+      ...req.body
+    });
+    return res.status(changeDonationResponse.status).json(changeDonationResponse);
+  } catch (e) {
+    return res.status(500).json({
+      message: "Gagal mengubah status donasi."
+    });
+  } 
+}
+
 export default {
   addPemasukanCategory,
   getPemasukanCategory,
@@ -172,5 +187,6 @@ export default {
   createPurposeofAccountBank,
   getPurposeofAccountBank,
   createAccountBank,
-  getAccountBank
+  getAccountBank,
+  updateDonation
 };

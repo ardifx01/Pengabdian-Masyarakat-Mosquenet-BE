@@ -1,6 +1,7 @@
 import { prismaClient } from "../application/database.js";
 import { addCategorySchema, addIncomeSchema, getCategorySchema } from "../validation/pemasukan-validation.js"
 import {validate} from "../validation/validation.js"
+import donationServices from "./donation-services.js";
 import mosqueServices from "./mosque-services.js";
 
 const addCategory = async (request) => {
@@ -130,11 +131,17 @@ const getIncome = async (request) => {
     }
   });
 
-  return {
-    message: "Daftar Pemasukan berhasil didapatkan!",
-    status: 200,
-    incomes: getMosqueIncome
-  };
+  const getMosqueDonations = await donationServices.getDonation(masjidId);
+
+  if(getMosqueIncome && getMosqueDonations) {
+    return {
+      message: "Daftar Pemasukan berhasil didapatkan!",
+      status: 200,
+      incomes: getMosqueIncome,
+      donations: getMosqueDonations
+    };
+  }
+
 }
 
 export default {

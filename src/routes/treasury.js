@@ -40,6 +40,8 @@ treasuryRouter.post('/api/pemasukan/category/get', treasuryController.getPemasuk
 treasuryRouter.post('/api/pemasukan/add', treasuryController.addPemasukan);
 treasuryRouter.post('/api/pemasukan/get', treasuryController.getPemasukan);
 
+treasuryRouter.put('/api/pemasukan/mosque/:masjid_id/donation/:donation_id', treasuryController.updateDonation);
+
 treasuryRouter.post('/api/pengeluaran/reason/add', treasuryController.addReasonPengeluaran);
 treasuryRouter.post('/api/pengeluaran/reason/get', treasuryController.getReasonPengeluaran);
 treasuryRouter.post('/api/pengeluaran/add', treasuryController.addPengeluaran);
