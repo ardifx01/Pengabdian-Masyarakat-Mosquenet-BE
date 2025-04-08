@@ -3,6 +3,7 @@ import { prismaClient } from "../application/database.js";
 import accountBankValidation from "../validation/account-bank-validation.js"
 import { validate } from "../validation/validation.js"
 import mosqueServices from "./mosque-services.js";
+import jwt from 'jsonwebtoken';
 
 const createPurpose = async (request) => {
   request = validate(accountBankValidation.createPurposeSchema, request);
@@ -92,9 +93,6 @@ const createAccount = async (request, requestFiles) => {
   if(purpose) {
     const imagePath = requestFiles?.image ? path.join('transaction/images', requestFiles.image[0].filename) : "";
 
-    console.log("path: ",imagePath);
-    console.log("requestFiles: ", requestFiles);
-
     const saveAccount = await prismaClient.accountBank.create({
       data: {
         name: request.name,
@@ -165,12 +163,128 @@ const getAccount = async (request) => {
   }
 }
 
-const updateAccount = async (request) => {
+const getAccountWithHashedMasjidID = async (request) => {
+  request = validate(accountBankValidation.getPurposeSchema, request);
+  const masjid_id = await mosqueServices.changeTokenToMasjidId(request);
 
+  if(!masjid_id) {
+    return {
+      status: 400,
+      message: "Akses illegal"
+    };
+  }
+
+  const donations = await prismaClient.accountBank.findMany({
+    where: {
+      masjid_id: masjid_id
+    },
+    select: {
+      id: true,
+      purpose: true
+    }
+  });
+
+  if(donations) {
+    const donationsData = donations.map((value) => {
+      const {id, ...rest} = value;
+      return {
+        ...rest,
+        id: jwt.sign(String(id), process.env.SECRET_KEY)
+      }
+    });
+    return {
+      donations: donationsData,
+      message: "Daftar Donasi berhasil didapatkan!",
+      status: 200
+    }
+  } else {
+    return {
+      message: "Daftar donasi gagal didapatkan!",
+      status: 500
+    }
+  }
 }
 
-const deleteAccount = async (request) => {
+const getDetailAccount = async (request) => {
+  request = validate(accountBankValidation.getPurposeSchema, request);
+  const accountID = await mosqueServices.changeTokenToMasjidId(request);
 
+  if(!accountID) {
+    return {
+      status: 400,
+      message: "Akses illegal"
+    };
+  }
+
+  const accountBank = await prismaClient.accountBank.findFirst({
+    where: {
+      id: accountID
+    },
+    select: {
+      name: true,
+      image: true,
+      bank: true,
+      account: true,
+      alias_name: true,
+      purpose: true
+    }
+  });  
+
+  if(accountBank) {
+    return {
+      account: accountBank,
+      message: "Rekening Donasi berhasil didapatkan!",
+      status: 200
+    }
+  } else {
+    return {
+      message: "Rekening donasi gagal didapatkan!",
+      status: 500
+    }
+  }
+}
+
+const saveDonation = async (request, requestFiles) => {
+  request = validate(accountBankValidation.saveDonationSchema, request);
+  const masjidId = await mosqueServices.changeTokenToMasjidId(request.masjid_id);
+  const donationId = await mosqueServices.changeTokenToMasjidId(request.donation_id);
+  if(!masjidId && !donationId) {
+    return {
+      status: 400,
+      message: "Akses illegal"
+    };
+  }
+
+  const imagePath = requestFiles?.image ? path.join('donations/images', requestFiles.image[0].filename) : "";
+
+  const type = await prismaClient.accountBank.findFirst({
+    where: {
+      id: donationId
+    }
+  });
+
+  const save = await prismaClient.donation.create({
+    data: {
+      image: imagePath,
+      name: request.name,
+      masjid_id: masjidId,
+      verified: false,
+      amount: Number(request.amount),
+      type: type.purpose
+    }
+  })
+
+  if(save) {
+    return {
+      message: "Donasi berhasil dilakukan! Terima kasih",
+      status: 200
+    }
+  } else {
+    return {
+      message: "Donasi gagal dilakukan. Coba lagi!",
+      status: 500
+    }
+  }
 }
 
 export default {
@@ -178,6 +292,7 @@ export default {
   getPurpose,
   createAccount,
   getAccount,
-  updateAccount, 
-  deleteAccount
+  getAccountWithHashedMasjidID,
+  getDetailAccount,
+  saveDonation
 }

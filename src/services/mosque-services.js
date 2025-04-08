@@ -148,7 +148,7 @@ const getJamaah = async (id) => {
 }
 
 const current = async (id) => {
-  const masjid_id = jwt.verify(id, process.env.SECRET_KEY);
+  const masjid_id = changeTokenToMasjidId(id);
   if(!masjid_id) {
     return {
       status: 400,
@@ -158,7 +158,7 @@ const current = async (id) => {
 
   const findMosque = await prismaClient.masjids.findFirst({
       where: {
-          id: Number(masjid_id)
+          id: masjid_id
       }
   });
   

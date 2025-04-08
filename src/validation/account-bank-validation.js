@@ -16,8 +16,16 @@ const createAccountSchema = Joi.object({
 
 const getPurposeSchema = Joi.string().required()
 
+const saveDonationSchema = Joi.object({
+  name: Joi.string().required(),
+  amount: Joi.string().required(),
+  donation_id: Joi.string().required(),
+  masjid_id: Joi.string().required()
+})
+
 export default {
   createPurposeSchema,
   createAccountSchema,
-  getPurposeSchema
+  getPurposeSchema,
+  saveDonationSchema
 }
