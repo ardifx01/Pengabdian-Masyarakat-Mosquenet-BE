@@ -4,6 +4,7 @@ import { prismaClient } from "../application/database.js";
 import mosqueServices from "./mosque-services.js";
 import path from 'path';
 import fs from 'fs/promises';
+import fileServices from "./file-services.js";
 
 const createTemplate = async (requestData, requestFiles) => {
   requestData = validate(createTemplateSchema, requestData);
@@ -68,23 +69,6 @@ const getTemplates = async (request) => {
   }
 }
 
-const deleteTemplateFile = async (filename) => {
-  try {
-    const absolutePath = path.join(process.cwd(), filename);
-    await fs.unlink(absolutePath);
-    return {
-      status: 200,
-      message: "Berhasil menghapus file"
-    };
-  } catch (error) {
-    console.log(error);
-    return {
-      status: 500,
-      message: "Gagal menghapus file"
-    };
-  }
-}
-
 const editTemplate = async (requestData, requestFiles) => {
   requestData = validate(updateTemplateSchema, requestData);
 
@@ -104,7 +88,7 @@ const editTemplate = async (requestData, requestFiles) => {
   const documentPath = requestFiles?.document ? path.join('archive/templates', requestFiles.document[0].filename) : data.document;
 
   if(requestFiles.document) {
-    const deleteDocument = deleteTemplateFile(data.document);
+    const deleteDocument = fileServices.deleteFile(data.document);
     if(deleteDocument.status === 500) return deleteDocument;
   }
 
@@ -140,7 +124,7 @@ const deleteTemplate = async (request) => {
     }
   });
 
-  const deleteDocument = deleteTemplateFile(template.document);
+  const deleteDocument = fileServices.deleteFile(template.document);
   if(deleteDocument.status === 500) return deleteDocument;
 
   const deleteTemplateData = await prismaClient.mosqueLetterTemplate.delete({

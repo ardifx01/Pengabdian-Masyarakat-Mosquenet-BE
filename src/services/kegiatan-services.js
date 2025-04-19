@@ -4,8 +4,8 @@ import { getCategorySchema } from "../validation/pemasukan-validation.js";
 import { validate } from "../validation/validation.js";
 import mosqueServices from "./mosque-services.js";
 import path from 'path';
-import fs from 'fs/promises';
 import jwt from 'jsonwebtoken'
+import fileServices from "./file-services.js";
 
 const createKegiatan = async (requestData, requestFiles) => {
   requestData = validate(createKegiatanSchema, requestData);
@@ -138,12 +138,12 @@ const editKegiatan = async (requestData, requestFiles) => {
   const imagePath = requestFiles?.image ? path.join('activity/images', requestFiles.image[0].filename) : data.image;
 
   if(requestFiles.document) {
-    const deleteDocument = deleteKegiatanFile(data.document);
+    const deleteDocument = fileServices.deleteFile(data.document);
     if(deleteDocument.status === 500) return deleteDocument;
   }
   
   if(requestFiles.image) {
-    const deleteImage = deleteKegiatanFile(data.image);
+    const deleteImage = fileServices.deleteFile(data.image);
     if(deleteImage.status == 500) return deleteImage;
   }
 
@@ -181,23 +181,6 @@ const editKegiatan = async (requestData, requestFiles) => {
   }
 }
 
-const deleteKegiatanFile = async (filename) => {
-  try {
-    const absolutePath = path.join(process.cwd(), filename);
-    await fs.unlink(absolutePath);
-    return {
-      status: 200,
-      message: "Berhasil menghapus file"
-    };
-  } catch (error) {
-    console.log(error);
-    return {
-      status: 500,
-      message: "Gagal menghapus file"
-    };
-  }
-}
-
 const deleteKegiatan = async (request) => {
   request = validate(deleteKegiatanSchema, request);
 
@@ -207,10 +190,10 @@ const deleteKegiatan = async (request) => {
     }
   });
 
-  const deleteDocument = deleteKegiatanFile(kegiatan.document);
+  const deleteDocument = fileServices.deleteFile(kegiatan.document);
   if(deleteDocument.status === 500) return deleteDocument;
 
-  const deleteImage = deleteKegiatanFile(kegiatan.image);
+  const deleteImage = fileServices.deleteFile(kegiatan.image);
   if(deleteImage.status == 500) return deleteImage;
 
   const deleteKegiatanData = await prismaClient.activityInformations.delete({

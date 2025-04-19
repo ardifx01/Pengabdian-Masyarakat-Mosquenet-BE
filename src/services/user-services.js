@@ -2,7 +2,6 @@
 import { prismaClient } from "../application/database.js"
 import userValidation from "../validation/user-validation.js";
 import { validate } from "../validation/validation.js";
-import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 const getAll = async () => {

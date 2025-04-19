@@ -3,7 +3,7 @@ import { createDocumentSchema, deleteDocumentSchema, getDocumentSchema, updateDo
 import { prismaClient } from "../application/database.js";
 import mosqueServices from "./mosque-services.js";
 import path from 'path';
-import fs from 'fs/promises';
+import fileServices from "./file-services.js";
 
 const createDocument = async (requestData, requestFiles) => {
   requestData = validate(createDocumentSchema, requestData);
@@ -68,23 +68,6 @@ const getDocuments = async (request) => {
   }
 }
 
-const deleteDocumentArchive = async (filename) => {
-  try {
-    const absolutePath = path.join(process.cwd(), filename);
-    await fs.unlink(absolutePath);
-    return {
-      status: 200,
-      message: "Berhasil menghapus file"
-    };
-  } catch (error) {
-    console.log(error);
-    return {
-      status: 500,
-      message: "Gagal menghapus file"
-    };
-  }
-}
-
 const editDocument = async (requestData, requestFiles) => {
   requestData = validate(updateDocumentSchema, requestData);
 
@@ -104,7 +87,7 @@ const editDocument = async (requestData, requestFiles) => {
   const documentPath = requestFiles?.document ? path.join('archive/documents', requestFiles.document[0].filename) : data.document;
 
   if(requestFiles.document) {
-    const deleteDocument = deleteDocumentArchive(data.document);
+    const deleteDocument = fileServices.deleteFile(data.document);
     if(deleteDocument.status === 500) return deleteDocument;
   }
 
@@ -140,7 +123,7 @@ const deleteDocument = async (request) => {
     }
   });
 
-  const deleteDocument = deleteDocumentArchive(template.document);
+  const deleteDocument = fileServices.deleteFile(template.document);
   if(deleteDocument.status === 500) return deleteDocument;
 
   const deleteDocumentData = await prismaClient.mosqueArsips.delete({

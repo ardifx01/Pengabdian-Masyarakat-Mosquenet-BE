@@ -4,8 +4,8 @@ import { getCategorySchema } from "../validation/pemasukan-validation.js";
 import { validate } from "../validation/validation.js";
 import mosqueServices from "./mosque-services.js";
 import path from 'path';
-import fs from 'fs/promises';
 import jwt from 'jsonwebtoken'
+import fileServices from "./file-services.js";
 
 const createContent = async (requestData, requestFiles) => {
   requestData = validate(createContentSchema, requestData);
@@ -136,7 +136,7 @@ const updateContent = async (requestData, requestFiles) => {
         (requestData.visual_content && (requestData.visual_content !== data.visual_content))
       ) && !data.visual_content.includes("www")
   ) {
-    const deleteContent = deleteContentFile(data.visual_content);
+    const deleteContent = fileServices.deleteFile(data.visual_content);
     if(deleteContent.status === 500) return deleteContent;
   }
 
@@ -164,23 +164,6 @@ const updateContent = async (requestData, requestFiles) => {
   }
 }
 
-const deleteContentFile = async (filename) => {
-  try {
-    const absolutePath = path.join(process.cwd(), filename);
-    await fs.unlink(absolutePath);
-    return {
-      status: 200,
-      message: "Berhasil menghapus file"
-    };
-  } catch (error) {
-    console.log(error);
-    return {
-      status: 500,
-      message: "Gagal menghapus file"
-    };
-  }
-}
-
 const deleteContent = async (request) => {
   request = validate(deleteContentSchema, request);
 
@@ -191,7 +174,7 @@ const deleteContent = async (request) => {
   });
 
   if(!content.visual_content.includes("www")) {
-    const deleteContentFilePath = deleteContentFile(content.visual_content);
+    const deleteContentFilePath = fileServices.deleteFile(content.visual_content);
     if(deleteContentFilePath.status === 500) return deleteDocument;
   }
 
