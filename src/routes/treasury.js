@@ -35,22 +35,22 @@ const upload = multer({
   fileFilter: fileFilter,
 });
 
-treasuryRouter.post('/api/pemasukan/category/add', treasuryController.addPemasukanCategory);
+treasuryRouter.post('/api/pemasukan/category', treasuryController.addPemasukanCategory);
 treasuryRouter.post('/api/pemasukan/category/get', treasuryController.getPemasukanCategory);
-treasuryRouter.post('/api/pemasukan/add', treasuryController.addPemasukan);
+treasuryRouter.post('/api/pemasukan', treasuryController.addPemasukan);
 treasuryRouter.post('/api/pemasukan/get', treasuryController.getPemasukan);
 
 treasuryRouter.put('/api/pemasukan/mosque/:masjid_id/donation/:donation_id', treasuryController.updateDonation);
 
-treasuryRouter.post('/api/pengeluaran/reason/add', treasuryController.addReasonPengeluaran);
+treasuryRouter.post('/api/pengeluaran/reason', treasuryController.addReasonPengeluaran);
 treasuryRouter.post('/api/pengeluaran/reason/get', treasuryController.getReasonPengeluaran);
-treasuryRouter.post('/api/pengeluaran/add', treasuryController.addPengeluaran);
+treasuryRouter.post('/api/pengeluaran', treasuryController.addPengeluaran);
 treasuryRouter.post('/api/pengeluaran/get', treasuryController.getPengeluaran);
 
-treasuryRouter.post('/api/laporan/get', treasuryController.getReports);
+treasuryRouter.post('/api/laporan', treasuryController.getReports);
 
 treasuryRouter.post(
-  '/api/account-bank/create', 
+  '/api/account-bank', 
   upload.fields([{ 
     name: 'image', 
     maxCount: 1 
@@ -58,7 +58,7 @@ treasuryRouter.post(
   treasuryController.createAccountBank 
 );
 treasuryRouter.post('/api/account-bank/get', treasuryController.getAccountBank);
-treasuryRouter.post('/api/account-bank/purpose/create', treasuryController.createPurposeofAccountBank);
+treasuryRouter.post('/api/account-bank/purpose', treasuryController.createPurposeofAccountBank);
 treasuryRouter.post('/api/account-bank/purpose/get', treasuryController.getPurposeofAccountBank);
 
 export {

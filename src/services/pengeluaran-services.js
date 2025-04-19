@@ -125,10 +125,6 @@ const getOutcome = async (request) => {
   };
 }
 
-const report = async (request) => {
-
-}
-
 export default {
   addReason,
   getReason,

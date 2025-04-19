@@ -55,13 +55,13 @@ const upload = multer({
   fileFilter: fileFilter,
 });
 
-adminRouter.post('/api/aset/add', adminController.asetAdd);
-adminRouter.post('/api/aset/edit/:id', adminController.asetUpdate);
+adminRouter.post('/api/aset', adminController.asetAdd);
+adminRouter.put('/api/aset/:id', adminController.asetUpdate);
 adminRouter.post('/api/aset/get', adminController.asetGet);
-adminRouter.post('/api/aset/delete/:id', adminController.asetDelete);
+adminRouter.delete('/api/aset/:id', adminController.asetDelete);
 
 adminRouter.post(
-  '/api/kegiatan/add', 
+  '/api/kegiatan', 
   upload.fields([
     { name: 'image', maxCount: 1 },
     { name: 'document', maxCount: 1 }
@@ -69,10 +69,10 @@ adminRouter.post(
   adminController.kegiatanAdd
 );
 adminRouter.post('/api/kegiatan/get', adminController.kegiatanGet);
-adminRouter.post('/api/kegiatan/delete/:id', adminController.kegiatanDelete);
-adminRouter.get('/api/kegiatan/detail/:id', adminController.kegiatanDetail);
-adminRouter.post(
-  '/api/kegiatan/edit', 
+adminRouter.delete('/api/kegiatan/:id', adminController.kegiatanDelete);
+adminRouter.get('/api/kegiatan/:id', adminController.kegiatanDetail);
+adminRouter.put(
+  '/api/kegiatan/:id', 
   upload.fields([
     { name: 'image', maxCount: 1 },
     { name: 'document', maxCount: 1 }

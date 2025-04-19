@@ -20,11 +20,6 @@ const createContent = async (requestData, requestFiles) => {
     : requestData.visual_content
     ? requestData.visual_content
     : ""
-
-  // const date = new Date().toISOString();
-  // const datePart = date.split('T')[0];
-  // const dateTime = new Date(`${datePart}T00:00:00Z`);
-  // console.log(dateTime);
   
   const saveContent = await prismaClient.contents.create({
     data: {

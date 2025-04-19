@@ -80,7 +80,7 @@ model Masjids {
   mosqueArsips         MosqueArsips[]
   mosqueLetterTemplate MosqueLetterTemplate[]
   donation             Donation[]
-  // animals              AnimalsQurban[]
+  animals              AnimalsQurban[]
   books                Books[]
   contents             Contents[]
 }
@@ -111,6 +111,7 @@ model Outcomes {
   masjid_id            Int
 
   masjid               Masjids                @relation(fields: [masjid_id], references: [id])
+  aset                 Assets?    
 }
 
 model OutcomeReason {
@@ -142,9 +143,11 @@ model Assets {
   amount               Int
   unit                 String
   masjid_id            Int
-  condition            Condition               
+  condition            Condition 
+  outcomes_id          Int                     @unique              
 
   Masjid               Masjids                 @relation(fields: [masjid_id], references: [id])
+  Pengeluaran          Outcomes                @relation(fields: [outcomes_id], references: [id])
 }
 
 model MosqueArsips {
@@ -176,42 +179,42 @@ model Donation {
   incomes_id           Int?
 
   Masjid               Masjids                 @relation(fields: [masjid_id], references: [id])
-  // Qurban               QurbanPayment[]
+  Qurban               QurbanPayment[]
 }
 
-// model Animal {
-//   id                   Int                     @id @default(autoincrement())
-//   name                 QurbanAnimalsName
-//   weight               Float
-//   amount               Int
+model Animal {
+  id                   Int                     @id @default(autoincrement())
+  name                 QurbanAnimalsName
+  weight               Float
+  amount               Int
 
-//   qurban               AnimalsQurban?
-// }
+  qurban               AnimalsQurban?
+}
 
-// model AnimalsQurban {
-//   id                   Int                     @id @default(autoincrement())
-//   masjid_id            Int                     
-//   animal_id            Int                     @unique
-//   price_per_kilo       Int
+model AnimalsQurban {
+  id                   Int                     @id @default(autoincrement())
+  masjid_id            Int                     
+  animal_id            Int                     @unique
+  price_per_kilo       Int
 
 
-//   Masjid               Masjids                 @relation(fields: [masjid_id], references: [id])
-//   Animal               Animal                  @relation(fields: [animal_id], references: [id])
-//   Transaction          QurbanPayment[]
-// }
+  Masjid               Masjids                 @relation(fields: [masjid_id], references: [id])
+  Animal               Animal                  @relation(fields: [animal_id], references: [id])
+  Transaction          QurbanPayment[]
+}
 
-// model QurbanPayment {
-//   id                   Int                     @id @default(autoincrement())
-//   animal_id            Int                      
-//   payment_id           Int
-//   name                 String
-//   qurban_code          String
-//   is_received          Boolean
-//   weight               Float
+model QurbanPayment {
+  id                   Int                     @id @default(autoincrement())
+  animal_id            Int                      
+  payment_id           Int
+  name                 String
+  qurban_code          String
+  is_received          Boolean
+  weight               Float
 
-//   Payment              Donation                @relation(fields: [payment_id], references: [id])
-//   Animal               AnimalsQurban           @relation(fields: [animal_id], references: [id])
-// }
+  Payment              Donation                @relation(fields: [payment_id], references: [id])
+  Animal               AnimalsQurban           @relation(fields: [animal_id], references: [id])
+}
 
 model AccountBank {
   id                   Int                     @id @default(autoincrement())

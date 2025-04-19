@@ -28,7 +28,7 @@ web.use(leaderRouter);
 web.use(treasuryRouter);
 web.use(secretaryRouter);
 web.use(adminRouter);
-web.use(midtransRouter);
+// web.use(midtransRouter);
 
 // Error middleware harus selalu di akhir
 web.use(errorMiddleware);

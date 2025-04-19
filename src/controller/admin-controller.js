@@ -32,6 +32,7 @@ const asetGet = async (req, res) => {
 const asetUpdate = async (req, res) => {
   try {
     const { id } = req.params;
+    console.log(req.body);
     const updateAssetResponse = await asetServices.updateAset({...req.body, asset_id: id});
     return res.status(updateAssetResponse.status).json(updateAssetResponse);
   } catch (e) {
@@ -94,7 +95,7 @@ const kegiatanDetail = async (req, res) => {
 
 const kegiatanUpdate = async (req, res) => {
   try {
-    const editKegiatanResponse = await kegiatanServices.editKegiatan(req.body, req.files);
+    const editKegiatanResponse = await kegiatanServices.editKegiatan({...req.body, id: req.params.id}, req.files);
     return res.status(editKegiatanResponse.status).json(editKegiatanResponse);
   } catch (e) {
     console.log(e);

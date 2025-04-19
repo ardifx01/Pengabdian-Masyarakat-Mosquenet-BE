@@ -11,16 +11,6 @@ const createAset = async (request) => {
     return masjidId;
   }
 
-  const saveAset = await prismaClient.assets.create({
-    data: {
-      name: request.name,
-      amount: request.amount,
-      condition: request.condition,
-      unit: request.unit,
-      masjid_id: masjidId
-    }
-  });
-
   const createPengeluaran = await prismaClient.outcomes.create({
     data: {
       amount: request.price * request.amount,
@@ -30,11 +20,29 @@ const createAset = async (request) => {
     }
   });
 
-  if(saveAset && createPengeluaran) {
-    return {
-      message: "Aset Masjid berhasil didata",
-      status: 200
-    };
+  if(createPengeluaran) {
+    const saveAset = await prismaClient.assets.create({
+      data: {
+        name: request.name,
+        amount: request.amount,
+        condition: request.condition,
+        unit: request.unit,
+        masjid_id: masjidId,
+        outcomes_id: createPengeluaran.id
+      }
+    });
+  
+    if(saveAset) {
+      return {
+        message: "Aset Masjid berhasil didata",
+        status: 200
+      };
+    } else {
+      return {
+        message: "Aset Masjid gagal tersimpan, coba lagi.",
+        status: 400
+      };
+    }
   } else {
     return {
       message: "Aset Masjid gagal tersimpan, coba lagi.",
@@ -59,15 +67,24 @@ const getAset = async (request) => {
       name: true,
       amount: true,
       condition: true,
-      unit: true
+      unit: true,
+      Pengeluaran: {
+        select: {
+          amount: true
+        }
+      }
     }
   });
 
   if(assets) {
+    const assetsData = assets.map(value => {
+      const { Pengeluaran, ...selectedAssetData } = value;
+      return {...selectedAssetData, price: Pengeluaran.amount / selectedAssetData.amount};
+    })
     return {
       message: "Aset masjid berhasil didapatkan",
       status: 200,
-      assets: assets
+      assets: assetsData
     }
   } else {
     return {
@@ -88,11 +105,16 @@ const updateAset = async (request) => {
       name: request.name,
       amount: request.amount,
       condition: request.condition,
-      unit: request.unit
+      unit: request.unit,
     }
   });
 
-  if(updateAsset) {
+  const updatePengeluaran = await prismaClient.outcomes.update({
+    where: { id: updateAsset.outcomes_id },
+    data: { amount: updateAsset.amount * request.price }
+  });
+
+  if(updateAsset && updatePengeluaran) {
     return {
       message: "Aset masjid berhasil diupdate.",
       status: 200,
@@ -114,7 +136,13 @@ const deleteAset = async (request) => {
     }
   });
 
-  if(deleteMosqueAset) {
+  const deleteOutcomes = await prismaClient.outcomes.delete({
+    where: {
+      id: deleteMosqueAset.outcomes_id
+    }
+  });
+
+  if(deleteMosqueAset && deleteOutcomes) {
     return {
       message: "Aset masjid berhasil dihapus",
       status: 200

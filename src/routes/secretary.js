@@ -44,7 +44,7 @@ const upload = multer({
 });
 
 secretaryRouter.post(
-  '/api/archive/template/create',
+  '/api/archive/template',
   upload.fields([{ 
     name: 'document', 
     maxCount: 1 
@@ -53,17 +53,17 @@ secretaryRouter.post(
 );
 secretaryRouter.post('/api/archive/templates', secretaryController.getTemplateDocument);
 secretaryRouter.put(
-  '/api/archive/template/update/:id',
+  '/api/archive/template/:id',
   upload.fields([{ 
     name: 'document', 
     maxCount: 1 
   }]),
   secretaryController.changeTemplateDocument
 );
-secretaryRouter.delete('/api/archive/template/delete/:id', secretaryController.deleteTemplateDocument);
+secretaryRouter.delete('/api/archive/template/:id', secretaryController.deleteTemplateDocument);
 
 secretaryRouter.post(
-  '/api/archive/document/create',
+  '/api/archive/document',
   upload.fields([{ 
     name: 'document', 
     maxCount: 1 
@@ -72,14 +72,14 @@ secretaryRouter.post(
 );
 secretaryRouter.post('/api/archive/documents', secretaryController.getDocuments);
 secretaryRouter.put(
-  '/api/archive/document/update/:id',
+  '/api/archive/document/:id',
   upload.fields([{ 
     name: 'document', 
     maxCount: 1 
   }]),
   secretaryController.changeDocument
 );
-secretaryRouter.delete('/api/archive/document/delete/:id', secretaryController.deleteDocument);
+secretaryRouter.delete('/api/archive/document/:id', secretaryController.deleteDocument);
 
 
 export {
