@@ -9,6 +9,7 @@ import fs from 'fs';
 import path, { dirname } from 'path';
 import { fileURLToPath } from "url";
 import nodemailer from 'nodemailer';
+import userServices from "./user-services.js";
 
 const sendMail = (subject, email, errorMessage, tempFileName, key, value) => {
   const __filename = fileURLToPath(import.meta.url);
@@ -177,7 +178,7 @@ const login = async (request) => {
         admin,
         master, 
         jamaah,
-        id: user.id,
+        id: jwt.sign(String(user.id), process.env.SECRET_KEY),
     };
 }
 
@@ -277,7 +278,12 @@ const verifyEmail = async (request) => {
   try {
     request = validate(authValidation.verifySchema, request);
 
-    const user = await prismaClient.users.findFirst({ where: { email: request.email, tokenVerification: request.token } });
+    const user = await prismaClient.users.findFirst({ 
+      where: { 
+        email: request.email, 
+        tokenVerification: request.token 
+      } 
+    });
 
     if(user) {
       return {
@@ -336,6 +342,33 @@ const resetPassword = async (request) => {
   }
 }
 
+const verifyLogin = async (request) => {
+  request = validate(authValidation.verifyLoginSchema, request);
+
+  const user = await userServices.getUserBasedHashID(request.user_id);
+  if (user) {
+    return {
+      status: 200,
+      message: "Pengguna ditemukan!",
+      user: {
+        admin: {
+          status: user.admin.status,
+          role: user.admin.role
+        },
+        master: {
+          status: user.master.status
+        },
+        email: user.email
+      }
+    }
+  } else {
+    return {
+      status: 500,
+      message: "Pengguna tidak ditemukan! Coba lagi",
+    }
+  }
+}
+
 
 export default {
   registerToken,
@@ -344,5 +377,6 @@ export default {
   verifyAccount,
   findEmail,
   verifyEmail,
-  resetPassword
+  resetPassword,
+  verifyLogin
 }

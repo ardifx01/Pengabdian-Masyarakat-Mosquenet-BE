@@ -1,4 +1,6 @@
+// import animalServices from "../services/animal-services(optional).js";
 import asetServices from "../services/aset-services.js";
+import contentServices from "../services/content-services.js";
 import dashboardServices from "../services/dashboard-services.js";
 import kegiatanServices from "../services/kegiatan-services.js";
 import paymentServices from "../services/payment-services.js";
@@ -163,6 +165,80 @@ const checkKasPayment = async (req, res) => {
   }
 }
 
+const addContent = async (req, res) => {
+  try {
+    const createContentResponse = await contentServices.createContent(req.body, req.files);
+    return res.status(createContentResponse.status).json(createContentResponse);
+  } catch (e) {
+    console.log(e);
+    return res.status(500).json({
+      message: "Gagal menambahkan konten."
+    })
+  }
+}
+
+const getContents = async (req, res) => {
+  try {
+    const getContentsResponse = await contentServices.getContents(req.body);
+    return res.status(getContentsResponse.status).json(getContentsResponse);
+  } catch (e) {
+    console.log(e);
+    return res.status(500).json({
+      message: "Gagal mendapatkan daftar konten."
+    });
+  }
+}
+
+const getContent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const getContentResponse = await contentServices.getContent({ content_id: id });
+    return res.status(getContentResponse.status).json(getContentResponse);
+  } catch (e) {
+    console.log(e);
+    return res.status(500).json({
+      message: "Gagal mendapatkan konten."
+    })
+  }
+}
+
+const updateContent = async (req, res) => {
+  try {
+    const updateContentResponse = await contentServices.updateContent(req.body, req.files);
+    return res.status(updateContentResponse.status).json(updateContentResponse);
+  } catch (e) {
+    console.log(e);
+    return res.status(500).json({
+      message: "Gagal mengubah konten."
+    })
+  }
+}
+
+const deleteContent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deleteContentResponse = await contentServices.deleteContent({content_id: id});
+    return res.status(deleteContentResponse.status).json(deleteContentResponse);
+  } catch (e) {
+    console.log(e);
+    return res.status(500).json({
+      message: "Gagal menghapus konten."
+    })
+  }
+}
+
+// const addAnimal = async (req, res) => {
+//   try {
+//     const addAnimalResponse = await animalServices.addAnimal(req.body);
+//     return res.status(addAnimalResponse.status).json(addAnimalResponse);
+//   } catch (e) {
+//     console.log(e);
+//     return res.status(500).json({
+//       message: "Gagal menambahkan hewan kurban."
+//     })
+//   }
+// }
+
 export default {
   asetAdd,
   asetGet,
@@ -176,5 +252,11 @@ export default {
   getDashboardData,
   kasPayment,
   paymentCallback,
-  checkKasPayment
+  checkKasPayment,
+  addContent,
+  getContents,
+  getContent,
+  updateContent,
+  deleteContent
+  // addAnimal
 };

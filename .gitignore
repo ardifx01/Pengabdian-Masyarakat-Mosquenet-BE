@@ -9,3 +9,6 @@ node_modules
 /archive/templates/*
 
 /donations/images/*
+
+/transaction/images/*
+# /contents/*

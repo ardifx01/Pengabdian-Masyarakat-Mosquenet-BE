@@ -11,6 +11,8 @@ authRouter.post('/api/auth/forgot/find-email', authController.findEmail);
 authRouter.post('/api/auth/forgot/verify-account', authController.verifyEmail);
 authRouter.post('/api/auth/forgot/reset-password', authController.resetPassword);
 
+authRouter.post('/api/auth/check', authController.verifyLogin);
+
 export {
   authRouter
 }

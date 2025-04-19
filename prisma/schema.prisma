@@ -80,9 +80,9 @@ model Masjids {
   mosqueArsips         MosqueArsips[]
   mosqueLetterTemplate MosqueLetterTemplate[]
   donation             Donation[]
-  animals              AnimalsQurban[]
+  // animals              AnimalsQurban[]
   books                Books[]
-
+  contents             Contents[]
 }
 
 model Incomes {
@@ -173,30 +173,45 @@ model Donation {
   amount               Int
   image                String
   type                 String
+  incomes_id           Int?
 
   Masjid               Masjids                 @relation(fields: [masjid_id], references: [id])
-  Qurban               QurbanPayment[]
+  // Qurban               QurbanPayment[]
 }
 
-model AnimalsQurban {
-  id                   Int                     @id @default(autoincrement())
-  masjid_id            Int                     
-  name                 String
-  amount               Int
-  sell                 Int
+// model Animal {
+//   id                   Int                     @id @default(autoincrement())
+//   name                 QurbanAnimalsName
+//   weight               Float
+//   amount               Int
 
-  Masjid               Masjids                 @relation(fields: [masjid_id], references: [id])
-  Transaction          QurbanPayment[]
-}
+//   qurban               AnimalsQurban?
+// }
 
-model QurbanPayment {
-  id                   Int                     @id @default(autoincrement())
-  animal_id            Int                      
-  payment_id           Int
+// model AnimalsQurban {
+//   id                   Int                     @id @default(autoincrement())
+//   masjid_id            Int                     
+//   animal_id            Int                     @unique
+//   price_per_kilo       Int
 
-  Payment              Donation                @relation(fields: [payment_id], references: [id])
-  Animal               AnimalsQurban           @relation(fields: [animal_id], references: [id])
-}
+
+//   Masjid               Masjids                 @relation(fields: [masjid_id], references: [id])
+//   Animal               Animal                  @relation(fields: [animal_id], references: [id])
+//   Transaction          QurbanPayment[]
+// }
+
+// model QurbanPayment {
+//   id                   Int                     @id @default(autoincrement())
+//   animal_id            Int                      
+//   payment_id           Int
+//   name                 String
+//   qurban_code          String
+//   is_received          Boolean
+//   weight               Float
+
+//   Payment              Donation                @relation(fields: [payment_id], references: [id])
+//   Animal               AnimalsQurban           @relation(fields: [animal_id], references: [id])
+// }
 
 model AccountBank {
   id                   Int                     @id @default(autoincrement())
@@ -240,11 +255,21 @@ model LoaningBooks {
   Book                 Books                   @relation(fields: [books_id], references: [id])
 }
 
+model Contents {
+  id                   Int                     @id @default(autoincrement())
+  masjid_id            Int
+  title                String
+  post_date            DateTime
+  contents             String
+  visual_content       String?
+
+  masjid               Masjids                 @relation(fields: [masjid_id], references: [id])
+}
+
 enum AdminRole {
   Ketua
   Bendahara
   Sekretaris
-  Marbot
   Pengurus
   Ustad
   Donatur
@@ -259,4 +284,11 @@ enum Condition {
 enum PaymentStatus {
   PAID
   PENDING
+}
+
+enum QurbanAnimalsName {
+  Unta
+  Sapi
+  Domba
+  Kambing
 }

@@ -39,11 +39,16 @@ const verifySchema = Joi.object({
   token: Joi.string().required()
 });
 
+const verifyLoginSchema = Joi.object({
+  user_id: Joi.string().required()
+});
+
 export default {
     registerSchema,
     loginSchema,
     makeTokenSchema,
     verifyAccountSchema,
     findEmailSchema,
-    verifySchema
+    verifySchema,
+    verifyLoginSchema
 };

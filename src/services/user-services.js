@@ -3,6 +3,7 @@ import { prismaClient } from "../application/database.js"
 import userValidation from "../validation/user-validation.js";
 import { validate } from "../validation/validation.js";
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 const getAll = async () => {
     const users = await prismaClient.users.findMany({
@@ -24,14 +25,32 @@ const updateUserRole = async (request) => {
   request = validate(userValidation.updateRoleSchema, request);
   const user = await prismaClient.users.findFirst({
     where: {
-      email: request.email
+      email: request.email,
+    },
+    select: {
+      admin: true
     }
   });
-
+  
   if(!user) {
     return {
       status: 400,
       message: "Email tidak ditemukan"
+    };
+  }
+
+  const leader = await prismaClient.users.findMany({
+    where: {
+      admin: {
+        role: "Ketua"
+      }
+    }
+  });
+
+  if(leader.length <= 1 && user.admin.role === "Ketua") {
+    return {
+      status: 400,
+      message: "Role Pengguna gagal diubah! Tambahkan satu ketua terlebih dahulu."
     };
   }
 
@@ -44,7 +63,7 @@ const updateUserRole = async (request) => {
   ) {
     await prismaClient.admins.update({
       where: {
-        id: user.admin_id
+        id: user.admin.id
       },
       data: {
         status: true,
@@ -54,7 +73,7 @@ const updateUserRole = async (request) => {
   }else if(request.role === "Jamaah") {
     await prismaClient.admins.update({
       where: {
-        id: user.admin_id
+        id: user.admin.id
       },
       data: {
         status: false,
@@ -70,14 +89,32 @@ const updateUserRole = async (request) => {
 }
 
 const getUserBasedHashID = async (user_id) => {
-  const users = await getAll();
-  const findUser = await Promise.all(
-      users.map(async (value) => ({
-          id: value.id,
-          match: bcrypt.compare(String(value.id), user_id)
-      }))
-  );
-  const user = findUser.find((value) => value.match);
+  const id = jwt.verify(String(user_id), process.env.SECRET_KEY);
+  const user = await prismaClient.users.findFirst({
+    where: {
+      id: Number(id)
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      telp: true,
+      admin_id: true,
+      admin: {
+        select: {
+          role: true,
+          status: true,
+        }
+      },
+      master: {
+        select: {
+          status: true
+        }
+      },
+      master_id: true,
+      jamaah_id: true,
+    }
+  })
   if(user) return user;
   else return null;
 }

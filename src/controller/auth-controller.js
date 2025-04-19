@@ -8,7 +8,6 @@ const register = async (req, res) => {
         data.data.isAdmin = false;
 
         const tokenResponse = await authServices.registerToken(data.data);
-        console.log("token: ",tokenResponse);
 
         if(destination === "masjid" && tokenResponse.ok) {
           const response = await mosqueServices.create(data.mosqueData);
@@ -105,11 +104,22 @@ const resetPassword = async (req, res) => {
   }
 }
 
+const verifyLogin = async (req, res) => {
+  try {
+    const user = await authServices.verifyLogin(req.body);
+    return res.status(user.status).json(user.user);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: err.response.message });
+  }
+}
+
 export default {
     register,
     login,
     verify,
     findEmail,
     verifyEmail,
-    resetPassword
+    resetPassword,
+    verifyLogin
 }

@@ -35,15 +35,38 @@ const changeDonationStatus = async (request) => {
   });
 
   if(findDonation) {
+    let incomes_id = null;
+    if(request.verified) {
+      const data = await prismaClient.incomes.create({
+        data: {
+          masjid_id: masjid_id,
+          source: `${findDonation.type} - ${findDonation.name}`,
+          amount: findDonation.amount,
+          date: new Date().toISOString()
+        }
+      });
+      if(data) {
+        incomes_id = data.id;
+      }
+    } else if(!request.verified) {
+      await prismaClient.incomes.delete({
+        where: {
+          id: findDonation.incomes_id
+        }
+      });
+    }
+    
     const updateDonation = await prismaClient.donation.update({
       where: {
         masjid_id: masjid_id,
         id: donation_id
       },
       data: {
-        verified: request.verified
+        verified: incomes_id ? true : false,
+        incomes_id: incomes_id
       }
     });
+
 
     if(updateDonation) {
       return {

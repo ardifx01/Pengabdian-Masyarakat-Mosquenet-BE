@@ -47,6 +47,7 @@ publicRouter.get('/api/ward/list', publicController.getWardList);
 // mosque
 publicRouter.get('/api/mosque/list', publicController.getMosqueList);
 publicRouter.get('/api/mosque/kegiatan/:id', publicController.getKegiatan);
+publicRouter.get('/api/mosque/konten/:id', publicController.getContent);
 publicRouter.get('/api/mosque/user/:id', publicController.getMosqueByJamaah);
 publicRouter.get('/api/mosque/id/:id', publicController.getMosqueById);
 publicRouter.get('/api/mosque/donations/:id', publicController.getDonationsList);

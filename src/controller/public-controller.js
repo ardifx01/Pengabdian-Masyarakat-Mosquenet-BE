@@ -6,6 +6,7 @@ import mosqueServices from "../services/mosque-services.js";
 import kegiatanServices from "../services/kegiatan-services.js";
 import criticsSuggestionServices from "../services/critics-suggestion-services.js";
 import accountBankServices from "../services/account-bank-services.js";
+import contentServices from "../services/content-services.js";
 
 const getProvinceList = (req, res) => {
     try {
@@ -105,6 +106,17 @@ const getKegiatan = async (req, res) => {
   }
 }
 
+const getContent = async (req, res) => {
+  try {
+    const mosque = await contentServices.currentByMasjidId(req.params.id);
+    return res.status(mosque.status).json(mosque);
+  } catch (e) {
+      return res.status(400).json({
+          message: "Gagal mendapatkan kegiatan"
+      });
+  }
+}
+
 const receiveCriticsAndSuggestion = async (req, res) => {
   try {
     const saveCriticsResponse = await criticsSuggestionServices.create(req.body);
@@ -176,5 +188,6 @@ export default {
     receiveCriticsAndSuggestion,
     getDonationsList,
     getDonation,
-    sendDonation
+    sendDonation,
+    getContent
 }
