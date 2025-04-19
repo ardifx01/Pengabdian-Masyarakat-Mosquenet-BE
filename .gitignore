@@ -11,4 +11,4 @@ node_modules
 /donations/images/*
 
 /transaction/images/*
-# /contents/*
+/contents/*
