@@ -6,7 +6,7 @@ import donationServices from "../services/donation-services.js";
 
 const addPemasukanCategory = async (req, res) => {
   try {
-    const categoryAddResponse = await pemasukanServices.addCategory(req.body);
+    const categoryAddResponse = await pemasukanServices.addCategory({ ...req.body, user_id: req.headers.authorization });
     return res.status(categoryAddResponse.status).json(categoryAddResponse);
   } catch (e) {
     console.log(e);
@@ -18,7 +18,7 @@ const addPemasukanCategory = async (req, res) => {
 
 const getPemasukanCategory = async (req, res) => {
   try {
-    const getCategoriesResponse = await pemasukanServices.getCategory(req.body);
+    const getCategoriesResponse = await pemasukanServices.getCategory({ user_id: req.headers.authorization });
     return res.status(getCategoriesResponse.status).json(getCategoriesResponse);
   } catch (e) {
     console.log(e);
@@ -30,7 +30,7 @@ const getPemasukanCategory = async (req, res) => {
 
 const addPemasukan = async (req, res) => {
   try {
-    const createIncomeResponse = await pemasukanServices.addIncome(req.body);
+    const createIncomeResponse = await pemasukanServices.addIncome({ ...req.body, user_id: req.headers.authorization });
     return res.status(createIncomeResponse.status).json(createIncomeResponse);
   } catch (e) {
     console.log(e);
@@ -42,7 +42,7 @@ const addPemasukan = async (req, res) => {
 
 const getPemasukan = async (req, res) => {
   try {
-    const getIncomeResponse = await pemasukanServices.getIncome(req.body);
+    const getIncomeResponse = await pemasukanServices.getIncome({...req.body, user_id: req.headers.authorization });
     return res.status(getIncomeResponse.status).json(getIncomeResponse);
   } catch (e) {
     console.log(e);
@@ -54,7 +54,7 @@ const getPemasukan = async (req, res) => {
 
 const addReasonPengeluaran = async (req, res) => {
   try {
-    const reasonAddResponse = await pengeluaranServices.addReason(req.body);
+    const reasonAddResponse = await pengeluaranServices.addReason({ ...req.body, user_id: req.headers.authorization });
     return res.status(reasonAddResponse.status).json(reasonAddResponse);
   } catch (e) {
     console.log(e);
@@ -66,7 +66,7 @@ const addReasonPengeluaran = async (req, res) => {
 
 const getReasonPengeluaran = async (req, res) => {
   try {
-    const getPengeluaranReasons = await pengeluaranServices.getReason(req.body);
+    const getPengeluaranReasons = await pengeluaranServices.getReason({ user_id: req.headers.authorization });
     return res.status(getPengeluaranReasons.status).json(getPengeluaranReasons);
   } catch (e) {
     console.log(e);
@@ -78,7 +78,7 @@ const getReasonPengeluaran = async (req, res) => {
 
 const addPengeluaran = async (req, res) => {
   try {
-    const createOutcomeResponse = await pengeluaranServices.addOutcome(req.body);
+    const createOutcomeResponse = await pengeluaranServices.addOutcome({ ...req.body, user_id: req.headers.authorization });
     return res.status(createOutcomeResponse.status).json(createOutcomeResponse);
   } catch (e) {
     console.log(e);
@@ -90,7 +90,7 @@ const addPengeluaran = async (req, res) => {
 
 const getPengeluaran = async (req, res) => {
   try {
-    const getOutcomeResponse = await pengeluaranServices.getOutcome(req.body);
+    const getOutcomeResponse = await pengeluaranServices.getOutcome({ user_id: req.headers.authorization });
     return res.status(getOutcomeResponse.status).json(getOutcomeResponse);
   } catch (e) {
     console.log(e);
@@ -102,7 +102,7 @@ const getPengeluaran = async (req, res) => {
 
 const getReports = async (req, res) => {
   try {
-    const getReportResponse = await dashboardServices.report(req.body);
+    const getReportResponse = await dashboardServices.report({ user_id: req.headers.authorization });
     return res.status(getReportResponse.status).json(getReportResponse);
   } catch (e) {
     console.log(e);
@@ -114,7 +114,7 @@ const getReports = async (req, res) => {
 
 const createPurposeofAccountBank = async (req, res) => {
   try {
-    const getCreateAccountBankResponse = await accountBankServices.createPurpose(req.body);
+    const getCreateAccountBankResponse = await accountBankServices.createPurpose({ ...req.body, user_id: req.headers.authorization });
     return res.status(getCreateAccountBankResponse.status).json(getCreateAccountBankResponse);
   } catch (e) {
     console.log(e);
@@ -126,7 +126,7 @@ const createPurposeofAccountBank = async (req, res) => {
 
 const getPurposeofAccountBank = async (req, res) => {
   try {
-    const getPurposeAccountBankResponse = await accountBankServices.getPurpose(req.body.user_id);
+    const getPurposeAccountBankResponse = await accountBankServices.getPurpose(req.headers.authorization);
     return res.status(getPurposeAccountBankResponse.status).json(getPurposeAccountBankResponse);
   } catch (e) {
     console.log(e);
@@ -150,7 +150,7 @@ const createAccountBank = async (req, res) => {
 
 const getAccountBank = async (req, res) => {
   try {
-    const getAccountBankResponse = await accountBankServices.getAccount(req.body.user_id);
+    const getAccountBankResponse = await accountBankServices.getAccount(req.headers.authorization);
     return res.status(getAccountBankResponse.status).json(getAccountBankResponse);
   } catch (e) {
     console.log(e);

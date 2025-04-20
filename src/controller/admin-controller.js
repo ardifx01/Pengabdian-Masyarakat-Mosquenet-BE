@@ -7,7 +7,7 @@ import paymentServices from "../services/payment-services.js";
 
 const asetAdd = async (req, res) => {
   try {
-    const addAssetResponse = await asetServices.createAset(req.body);
+    const addAssetResponse = await asetServices.createAset({ ...req.body, user_id: req.headers.authorization });
     return res.status(addAssetResponse.status).json(addAssetResponse);
   } catch (e) {
     console.log(e);
@@ -19,7 +19,7 @@ const asetAdd = async (req, res) => {
 
 const asetGet = async (req, res) => {
   try {
-    const getAssetResponse = await asetServices.getAset(req.body);
+    const getAssetResponse = await asetServices.getAset({ user_id: req.headers.authorization });
     return res.status(getAssetResponse.status).json(getAssetResponse);
   } catch (e) {
     console.log(e);
@@ -58,7 +58,7 @@ const asetDelete = async (req, res) => {
 
 const kegiatanAdd = async (req, res) => {
   try {
-    const createKegiatanResponse = await kegiatanServices.createKegiatan(req.body, req.files);
+    const createKegiatanResponse = await kegiatanServices.createKegiatan({ ...req.body, user_id: req.headers.authorization }, req.files);
     return res.status(createKegiatanResponse.status).json(createKegiatanResponse);
   } catch (e) {
     console.log(e);
@@ -70,7 +70,7 @@ const kegiatanAdd = async (req, res) => {
 
 const kegiatanGet = async (req, res) => {
   try {
-    const getActivityResponse = await kegiatanServices.getKegiatan(req.body);
+    const getActivityResponse = await kegiatanServices.getKegiatan({ user_id: req.headers.authorization });
     return res.status(getActivityResponse.status).json(getActivityResponse);
   } catch (e) {
     console.log(e);
@@ -120,7 +120,7 @@ const kegiatanDelete = async (req, res) => {
 
 const getDashboardData = async (req, res) => {
   try {
-    const getDashboardResponse = await dashboardServices.getDashboardData(req.body);
+    const getDashboardResponse = await dashboardServices.getDashboardData({ user_id: req.headers.authorization });
     return res.status(getDashboardResponse.status).json(getDashboardResponse);
   } catch (e) {
     console.log(e);
@@ -168,7 +168,7 @@ const checkKasPayment = async (req, res) => {
 
 const addContent = async (req, res) => {
   try {
-    const createContentResponse = await contentServices.createContent(req.body, req.files);
+    const createContentResponse = await contentServices.createContent({ ...req.body, user_id: req.headers.authorization }, req.files);
     return res.status(createContentResponse.status).json(createContentResponse);
   } catch (e) {
     console.log(e);
@@ -180,7 +180,7 @@ const addContent = async (req, res) => {
 
 const getContents = async (req, res) => {
   try {
-    const getContentsResponse = await contentServices.getContents(req.body);
+    const getContentsResponse = await contentServices.getContents({ user_id: req.headers.authorization });
     return res.status(getContentsResponse.status).json(getContentsResponse);
   } catch (e) {
     console.log(e);

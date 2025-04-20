@@ -37,6 +37,7 @@ const login = async (req, res) => {
       const user = await authServices.login(req.body.data);
     
       if (user) {
+
         return res.status(200).json({
           message: "Login berhasil dilakukan",
           user

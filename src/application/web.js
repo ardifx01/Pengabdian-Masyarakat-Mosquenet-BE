@@ -22,12 +22,12 @@ web.use(bodyParser.json({ limit: '100mb' }));
 web.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
 
 // api
-web.use(authRouter);
-web.use(publicRouter);
-web.use(leaderRouter);
-web.use(treasuryRouter);
-web.use(secretaryRouter);
-web.use(adminRouter);
+web.use("/api", publicRouter);
+web.use("/api/auth", authRouter);
+web.use("/api", adminRouter);
+web.use("/api/transaction", treasuryRouter);
+web.use("/api/archive", secretaryRouter);
+web.use("/api", leaderRouter);
 // web.use(midtransRouter);
 
 // Error middleware harus selalu di akhir

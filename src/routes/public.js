@@ -1,5 +1,6 @@
 import express from "express";
 import publicController from "../controller/public-controller.js";
+import adminController from "../controller/admin-controller.js";
 import multer from "multer";
 import path from "path";
 
@@ -39,28 +40,32 @@ const upload = multer({
 });
 
 // location
-publicRouter.get('/api/provinces/list', publicController.getProvinceList);
-publicRouter.get('/api/cityorregency/list', publicController.getCityOrRegencyList);
-publicRouter.get('/api/subdistrict/list', publicController.getSubdistrictList);
-publicRouter.get('/api/ward/list', publicController.getWardList);
+publicRouter.get('/provinces/list', publicController.getProvinceList);
+publicRouter.get('/cityorregency/list', publicController.getCityOrRegencyList);
+publicRouter.get('/subdistrict/list', publicController.getSubdistrictList);
+publicRouter.get('/ward/list', publicController.getWardList);
 
 // mosque
-publicRouter.get('/api/mosque/list', publicController.getMosqueList);
-publicRouter.get('/api/mosque/kegiatan/:id', publicController.getKegiatan);
-publicRouter.get('/api/mosque/konten/:id', publicController.getContent);
-publicRouter.get('/api/mosque/user/:id', publicController.getMosqueByJamaah);
-publicRouter.get('/api/mosque/id/:id', publicController.getMosqueById);
-publicRouter.get('/api/mosque/donations/:id', publicController.getDonationsList);
-publicRouter.get('/api/mosque/donations/:id/get/:donation_id', publicController.getDonation);
+publicRouter.get('/mosque/list', publicController.getMosqueList);
+publicRouter.get('/mosque/kegiatan/:id', publicController.getKegiatan);
+publicRouter.get('/mosque/konten/:id', publicController.getContent);
+publicRouter.get('/mosque/user/:id', publicController.getMosqueByJamaah);
+publicRouter.get('/mosque/id/:id', publicController.getMosqueById);
+publicRouter.get('/mosque/donations/:id', publicController.getDonationsList);
+publicRouter.get('/mosque/donations/:id/get/:donation_id', publicController.getDonation);
+
+publicRouter.get('/kegiatan/:id', adminController.kegiatanDetail);
+publicRouter.get('/content/:id', adminController.getContent);
+
 publicRouter.post(
-  '/api/mosque/donations/:id/post/:donation_id', 
+  '/mosque/donations/:id/post/:donation_id', 
   upload.fields([
     { name: 'image', maxCount: 1 }
   ]),
   publicController.sendDonation
 );
 
-publicRouter.post('/api/critics-suggestion', publicController.receiveCriticsAndSuggestion)
+publicRouter.post('/critics-suggestion', publicController.receiveCriticsAndSuggestion)
 
 export {
   publicRouter

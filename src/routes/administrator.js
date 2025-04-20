@@ -2,8 +2,11 @@ import express from "express";
 import adminController from "../controller/admin-controller.js";
 import multer from "multer";
 import path from 'path';
+import { administratorMiddleware } from "../middleware/administrator-middleware.js";
 
 const adminRouter = new express.Router();
+
+adminRouter.use(administratorMiddleware);
 
 const storage = multer.diskStorage({ 
   destination: function (req, file, callback) {
@@ -55,24 +58,24 @@ const upload = multer({
   fileFilter: fileFilter,
 });
 
-adminRouter.post('/api/aset', adminController.asetAdd);
-adminRouter.put('/api/aset/:id', adminController.asetUpdate);
-adminRouter.post('/api/aset/get', adminController.asetGet);
-adminRouter.delete('/api/aset/:id', adminController.asetDelete);
+adminRouter.post('/aset', adminController.asetAdd);
+adminRouter.put('/aset/:id', adminController.asetUpdate);
+adminRouter.get('/aset', adminController.asetGet);
+adminRouter.delete('/aset/:id', adminController.asetDelete);
 
 adminRouter.post(
-  '/api/kegiatan', 
+  '/kegiatan', 
   upload.fields([
     { name: 'image', maxCount: 1 },
     { name: 'document', maxCount: 1 }
   ]),
   adminController.kegiatanAdd
 );
-adminRouter.post('/api/kegiatan/get', adminController.kegiatanGet);
-adminRouter.delete('/api/kegiatan/:id', adminController.kegiatanDelete);
-adminRouter.get('/api/kegiatan/:id', adminController.kegiatanDetail);
+adminRouter.get('/kegiatan', adminController.kegiatanGet);
+adminRouter.delete('/kegiatan/:id', adminController.kegiatanDelete);
+// adminRouter.get('/kegiatan/:id', adminController.kegiatanDetail);
 adminRouter.put(
-  '/api/kegiatan/:id', 
+  '/kegiatan/:id', 
   upload.fields([
     { name: 'image', maxCount: 1 },
     { name: 'document', maxCount: 1 }
@@ -81,29 +84,29 @@ adminRouter.put(
 );
 
 adminRouter.post(
-  '/api/content', 
+  '/content', 
   upload.fields([
     { name: 'visual_content', maxCount: 1 },
   ]),
   adminController.addContent
 );
-adminRouter.post('/api/content/get', adminController.getContents);
-adminRouter.delete('/api/content/:id', adminController.deleteContent);
-adminRouter.get('/api/content/:id', adminController.getContent);
+adminRouter.get('/content', adminController.getContents);
+adminRouter.delete('/content/:id', adminController.deleteContent);
+// adminRouter.get('/content/:id', adminController.getContent);
 adminRouter.put(
-  '/api/content/:id', 
+  '/content/:id', 
   upload.fields([
     { name: 'visual_content', maxCount: 1 },
   ]),
   adminController.updateContent
 );
 
-// adminRouter.post('/api/monitoring-kurban/animal', adminController.addAnimal);
-// adminRouter.post('/api/monitoring-kurban/sohibul');
+// adminRouter.post('/monitoring-kurban/animal', adminController.addAnimal);
+// adminRouter.post('/monitoring-kurban/sohibul');
 
-adminRouter.post('/api/dashboard', adminController.getDashboardData);
-adminRouter.post('/api/payment/kas', adminController.kasPayment);
-adminRouter.get('/api/payment/kas/check/:id', adminController.checkKasPayment);
+adminRouter.get('/dashboard', adminController.getDashboardData);
+adminRouter.post('/payment/kas', adminController.kasPayment);
+adminRouter.get('/payment/kas/check/:id', adminController.checkKasPayment);
 
 export {
   adminRouter

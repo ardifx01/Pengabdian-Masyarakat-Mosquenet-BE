@@ -1,11 +1,13 @@
 import express from "express";
 import leaderController from '../controller/leader-controller.js';
+import { leaderMiddleware } from "../middleware/leader-middleware.js";
 
 const leaderRouter = new express.Router();
+leaderRouter.use(leaderMiddleware)
 
-leaderRouter.get('/api/mosque/jamaah/:id', leaderController.getJamaahMasjid);
+leaderRouter.get('/mosque/jamaah/:id', leaderController.getJamaahMasjid);
 
-leaderRouter.post('/api/user/update/role', leaderController.updateUserRole);
+leaderRouter.post('/user/update/role', leaderController.updateUserRole);
 
 export {
   leaderRouter

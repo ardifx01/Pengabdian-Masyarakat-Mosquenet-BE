@@ -3,7 +3,7 @@ import templateDocumentServices from "../services/template-document-services.js"
 
 const createDocument = async (req, res) => {
   try {
-    const createDocumentResponse = await documentServices.createDocument(req.body, req.files);
+    const createDocumentResponse = await documentServices.createDocument({ ...req.body, user_id: req.headers.authorization }, req.files);
     return res.status(createDocumentResponse.status).json(createDocumentResponse);
   } catch (e) {
     console.log(e);
@@ -15,7 +15,7 @@ const createDocument = async (req, res) => {
 
 const getDocuments = async (req, res) => {
   try {
-    const getDocumentsResponse = await documentServices.getDocuments(req.body);
+    const getDocumentsResponse = await documentServices.getDocuments({ user_id: req.headers.authorization });
     console.log(getDocumentsResponse);
     return res.status(getDocumentsResponse.status).json(getDocumentsResponse);
   } catch (e) {
@@ -54,7 +54,7 @@ const deleteDocument = async (req, res) => {
 
 const createTemplateDocument = async (req, res) => {
   try {
-    const createTemplateResponse = await templateDocumentServices.createTemplate(req.body, req.files);
+    const createTemplateResponse = await templateDocumentServices.createTemplate({ ...req.body, user_id: req.headers.authorization }, req.files);
     return res.status(createTemplateResponse.status).json(createTemplateResponse);
   } catch (e) {
     console.log(e);
@@ -67,7 +67,7 @@ const createTemplateDocument = async (req, res) => {
 const getTemplateDocument = async (req, res) => {
   try {
 
-    const getTemplatesResponse = await templateDocumentServices.getTemplates(req.body);
+    const getTemplatesResponse = await templateDocumentServices.getTemplates({ user_id: req.headers.authorization });
     return res.status(getTemplatesResponse.status).json(getTemplatesResponse);
   } catch (e) {
     console.log(e);

@@ -3,15 +3,15 @@ import authController from "../controller/auth-controller.js";
 
 const authRouter = new express.Router();
 
-authRouter.post('/api/auth/register', authController.register);
-authRouter.post('/api/auth/login', authController.login);
-authRouter.post('/api/auth/verify', authController.verify);
+authRouter.post('/register', authController.register);
+authRouter.post('/login', authController.login);
+authRouter.post('/verify', authController.verify);
 
-authRouter.post('/api/auth/forgot/find-email', authController.findEmail);
-authRouter.post('/api/auth/forgot/verify-account', authController.verifyEmail);
-authRouter.post('/api/auth/forgot/reset-password', authController.resetPassword);
+authRouter.post('/forgot/find-email', authController.findEmail);
+authRouter.post('/forgot/verify-account', authController.verifyEmail);
+authRouter.post('/forgot/reset-password', authController.resetPassword);
 
-authRouter.post('/api/auth/check', authController.verifyLogin);
+authRouter.post('/check', authController.verifyLogin);
 
 export {
   authRouter

@@ -35,31 +35,31 @@ const upload = multer({
   fileFilter: fileFilter,
 });
 
-treasuryRouter.post('/api/pemasukan/category', treasuryController.addPemasukanCategory);
-treasuryRouter.post('/api/pemasukan/category/get', treasuryController.getPemasukanCategory);
-treasuryRouter.post('/api/pemasukan', treasuryController.addPemasukan);
-treasuryRouter.post('/api/pemasukan/get', treasuryController.getPemasukan);
+treasuryRouter.post('/pemasukan/category', treasuryController.addPemasukanCategory);
+treasuryRouter.get('/pemasukan/category', treasuryController.getPemasukanCategory);
+treasuryRouter.post('/pemasukan', treasuryController.addPemasukan);
+treasuryRouter.get('/pemasukan', treasuryController.getPemasukan);
 
-treasuryRouter.put('/api/pemasukan/mosque/:masjid_id/donation/:donation_id', treasuryController.updateDonation);
+treasuryRouter.put('/pemasukan/mosque/:masjid_id/donation/:donation_id', treasuryController.updateDonation);
 
-treasuryRouter.post('/api/pengeluaran/reason', treasuryController.addReasonPengeluaran);
-treasuryRouter.post('/api/pengeluaran/reason/get', treasuryController.getReasonPengeluaran);
-treasuryRouter.post('/api/pengeluaran', treasuryController.addPengeluaran);
-treasuryRouter.post('/api/pengeluaran/get', treasuryController.getPengeluaran);
+treasuryRouter.post('/pengeluaran/reason', treasuryController.addReasonPengeluaran);
+treasuryRouter.get('/pengeluaran/reason', treasuryController.getReasonPengeluaran);
+treasuryRouter.post('/pengeluaran', treasuryController.addPengeluaran);
+treasuryRouter.get('/pengeluaran', treasuryController.getPengeluaran);
 
-treasuryRouter.post('/api/laporan', treasuryController.getReports);
+treasuryRouter.get('/laporan', treasuryController.getReports);
 
 treasuryRouter.post(
-  '/api/account-bank', 
+  '/account-bank', 
   upload.fields([{ 
     name: 'image', 
     maxCount: 1 
   }]),
   treasuryController.createAccountBank 
 );
-treasuryRouter.post('/api/account-bank/get', treasuryController.getAccountBank);
-treasuryRouter.post('/api/account-bank/purpose', treasuryController.createPurposeofAccountBank);
-treasuryRouter.post('/api/account-bank/purpose/get', treasuryController.getPurposeofAccountBank);
+treasuryRouter.get('/account-bank', treasuryController.getAccountBank);
+treasuryRouter.post('/account-bank/purpose', treasuryController.createPurposeofAccountBank);
+treasuryRouter.get('/account-bank/purpose', treasuryController.getPurposeofAccountBank);
 
 export {
   treasuryRouter

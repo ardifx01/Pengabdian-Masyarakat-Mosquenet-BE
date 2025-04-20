@@ -2,15 +2,17 @@ import express from "express";
 import multer from 'multer';
 import path from 'path';
 import secretaryController from "../controller/secretary-controller.js";
+import { secretaryMiddleware } from "../middleware/secretary-middleware.js";
 
 const secretaryRouter = new express.Router();
+secretaryRouter.use(secretaryMiddleware);
 
 const storage = multer.diskStorage({ 
   destination: function (req, file, callback) {
     console.log(req.path);
-    if(req.path.includes('/api/archive/document') && file.mimetype === "application/pdf") {
+    if(req.path.includes('/document') && file.mimetype === "application/pdf") {
       callback(null, path.join('archive/documents'));
-    } else if (req.path.includes('/api/archive/template') && file.mimetype === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"){
+    } else if (req.path.includes('/template') && file.mimetype === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"){
       callback(null, path.join('archive/templates'));
     }
   },
@@ -44,42 +46,42 @@ const upload = multer({
 });
 
 secretaryRouter.post(
-  '/api/archive/template',
+  '/template',
   upload.fields([{ 
     name: 'document', 
     maxCount: 1 
   }]),
   secretaryController.createTemplateDocument
 );
-secretaryRouter.post('/api/archive/templates', secretaryController.getTemplateDocument);
+secretaryRouter.get('/template', secretaryController.getTemplateDocument);
 secretaryRouter.put(
-  '/api/archive/template/:id',
+  '/template/:id',
   upload.fields([{ 
     name: 'document', 
     maxCount: 1 
   }]),
   secretaryController.changeTemplateDocument
 );
-secretaryRouter.delete('/api/archive/template/:id', secretaryController.deleteTemplateDocument);
+secretaryRouter.delete('/template/:id', secretaryController.deleteTemplateDocument);
 
 secretaryRouter.post(
-  '/api/archive/document',
+  '/document',
   upload.fields([{ 
     name: 'document', 
     maxCount: 1 
   }]),
   secretaryController.createDocument
 );
-secretaryRouter.post('/api/archive/documents', secretaryController.getDocuments);
+secretaryRouter.get('/document', secretaryController.getDocuments);
 secretaryRouter.put(
-  '/api/archive/document/:id',
+  '/document/:id',
   upload.fields([{ 
     name: 'document', 
     maxCount: 1 
   }]),
   secretaryController.changeDocument
 );
-secretaryRouter.delete('/api/archive/document/:id', secretaryController.deleteDocument);
+secretaryRouter.delete('/document/:id', secretaryController.deleteDocument);
 
 
 export {
