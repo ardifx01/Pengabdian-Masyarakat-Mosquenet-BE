@@ -5,7 +5,6 @@ import path from 'path';
 import { administratorMiddleware } from "../middleware/administrator-middleware.js";
 
 const adminRouter = new express.Router();
-
 adminRouter.use(administratorMiddleware);
 
 const storage = multer.diskStorage({ 

@@ -2,8 +2,10 @@ import express from "express";
 import treasuryController from "../controller/treasury-controller.js";
 import multer from 'multer';
 import path from 'path';
+import { treasuryMiddleware } from "../middleware/treasury-middleware.js";
 
 const treasuryRouter = new express.Router();
+treasuryRouter.use(treasuryMiddleware)
 
 const storage = multer.diskStorage({ 
   destination: function (_req, file, callback) {

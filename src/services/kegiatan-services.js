@@ -104,10 +104,13 @@ const detailKegiatan = async (request) => {
   });
   
   if(kegiatan) {
+    const newDate = new Date(kegiatan.date).toISOString().split("T")[0];
+    const time = `${new Date(kegiatan.date).getUTCHours().toString().padStart(2, "0")}:${new Date(kegiatan.date).getUTCMinutes().toString().padStart(2, "0")}`;
+    const detailKegiatanWithTime = {...kegiatan, time, date: newDate};
     return {
       message: "Kegiatan Masjid berhasil didapatkan",
       status: 200,
-      activity: kegiatan
+      activity: detailKegiatanWithTime
     };
   } else {
     return {

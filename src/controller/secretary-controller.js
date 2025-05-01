@@ -92,6 +92,7 @@ const changeTemplateDocument = async (req, res) => {
 
 const deleteTemplateDocument = async (req, res) => {
   try {
+    console.log("masuk oi");
     req.body.id = Number(req.params.id);
     const updateTemplateDocumentResponse = await templateDocumentServices.deleteTemplate(req.body);
     return res.status(updateTemplateDocumentResponse.status).json(updateTemplateDocumentResponse);

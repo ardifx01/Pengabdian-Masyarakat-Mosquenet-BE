@@ -1,6 +1,6 @@
 import userServices from "../services/user-services.js";
 
-export const leaderMiddleware = async (req, res, next) => {
+export const authMiddleware = async (req, res, next) => {
   const token = req.headers.authorization;
   
   if(!token) {

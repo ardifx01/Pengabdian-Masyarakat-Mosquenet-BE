@@ -22,11 +22,12 @@ web.use(bodyParser.json({ limit: '100mb' }));
 web.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
 
 // api
-web.use("/api", publicRouter);
 web.use("/api/auth", authRouter);
-web.use("/api", adminRouter);
 web.use("/api/transaction", treasuryRouter);
 web.use("/api/archive", secretaryRouter);
+
+web.use("/api", publicRouter);
+web.use("/api", adminRouter);
 web.use("/api", leaderRouter);
 // web.use(midtransRouter);
 
