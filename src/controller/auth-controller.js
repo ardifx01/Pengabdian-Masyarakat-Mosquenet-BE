@@ -11,13 +11,14 @@ const register = async (req, res) => {
 
         if(destination === "masjid" && tokenResponse.ok) {
           const response = await mosqueServices.create(data.mosqueData);
+          if(!response) throw new ResponseError(500, 'Gagal menambahkan masjid');
           data.data.mosque_id = response.id;
           data.data.isAdmin = true;
         }
         
         if(tokenResponse.ok){
           data.data.token = tokenResponse.token;
-          const userResponse = await authServices.register(data.data);
+          const userResponse = await authServices.register({...data.data, ...(destination === "masjid" ? { role: "Ketua" } : { role: "Pengurus" })});
           return res.status(userResponse.status).json({
               ...userResponse
           });

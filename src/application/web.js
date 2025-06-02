@@ -8,6 +8,7 @@ import { publicRouter } from "../routes/public.js";
 import { leaderRouter } from "../routes/leader.js";
 import { treasuryRouter } from "../routes/treasury.js";
 import { adminRouter } from "../routes/administrator.js";
+import { masterRouter } from '../routes/master.js';
 import { midtransRouter } from "../routes/midtrans.js";
 import { secretaryRouter } from "../routes/secretary.js";
 
@@ -25,6 +26,7 @@ web.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
 web.use("/api/auth", authRouter);
 web.use("/api/transaction", treasuryRouter);
 web.use("/api/archive", secretaryRouter);
+web.use('/api/master', masterRouter);
 
 web.use("/api", publicRouter);
 web.use("/api", adminRouter);

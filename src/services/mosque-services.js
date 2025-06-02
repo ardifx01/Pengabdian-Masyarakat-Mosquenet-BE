@@ -8,8 +8,35 @@ import { validate } from "../validation/validation.js";
 import userServices from "./user-services.js";
 import jwt from "jsonwebtoken";
 
-const getAll = async () => {
-    const mosques = await prismaClient.masjids.findMany({
+const verifiedMasjid = async (request) => {
+  request = validate(masjidValidation.verifiedSchema, request);
+
+  const masjidId = await changeTokenToMasjidId(request.id);
+  
+  const verifyMasjid = await prismaClient.masjids.update({
+    data: {
+      verified: request.verified
+    },
+    where: {
+      id: masjidId
+    }
+  });
+
+  if(verifyMasjid) {
+    return {
+      status: 200,
+      message: "Masjid berhasil diverifikasi",
+    }
+  } else {
+    return {
+      status: 500,
+      message: "Masjid gagal diverifikasi, coba lagi!"
+    }
+  }
+}
+
+const getAllWithVerified = async () => {
+  const mosques = await prismaClient.masjids.findMany({
         select: {
             id: true,
             name: true, 
@@ -18,19 +45,66 @@ const getAll = async () => {
             cityorregency_id: true,
             province_id: true,
             ward_id: true,
+            verified: true
+        },
+        where: {
+          name: {
+            not: 'Mosquenet Developer'
+          }
         }
     });
     
     const responseData = await Promise.all(mosques.map(async (value) => {
         const { ward_id, subdistrict_id, province_id, cityorregency_id, id, ...rest } = value;
         return {
-            ...rest,
-            id: jwt.sign(String(id), process.env.SECRET_KEY),
-            location: `${value.location}, Kel.${ward.find(v => v.id == ward_id).name}, Kec.${subdistrict.find(v => v.id == subdistrict_id).name}, ${cityorregency.find(v => v.id == cityorregency_id).name}, Prov.${province.find(v => v.id == province_id).name}`
+          ...rest,
+          id: jwt.sign(String(id), process.env.SECRET_KEY),
+          location: `${value.location}, Kel.${ward.find(v => v.id == ward_id).name}, Kec.${subdistrict.find(v => v.id == subdistrict_id).name}, ${cityorregency.find(v => v.id == cityorregency_id).name}, Prov.${province.find(v => v.id == province_id).name}`
         }
     }));
 
-    return responseData;
+    if(responseData) {
+      return {
+        responseData: responseData,
+        status: 200,
+        message: "Daftar masjid berhasil didapatkan"
+      };
+    } else {
+      return {
+        responseData: null,
+        status: 500,
+        message: "Daftar masjid gagal didapatkan"
+      }
+    }
+
+}
+
+const getAll = async () => {
+    const data = await getAllWithVerified();
+
+    const responseData = await Promise.all(data.responseData.map(async value => {
+      const {verified, ...returnData} = value;
+
+      const masjidId = await changeTokenToMasjidId(value.id);
+      
+      const user = await prismaClient.users.findFirst({
+        where: {
+          jamaah: {
+            masjid_id: masjidId,
+          },
+          admin: {
+            status: true,
+            role: 'Ketua'
+          }
+        }
+      });
+
+      if(user.isVerified && verified) return returnData
+      else return null
+
+    }));
+
+    return responseData.filter(value => value !== null);
 };
 
 const getMasjidId = async (user_id) => {
@@ -99,6 +173,19 @@ const create = async (request) => {
         }
     });
 
+    if(mosqueAdd) {
+      const configurationAdd = await prismaClient.configuration.create({
+        data: {
+          masjid_id: mosqueAdd.id,
+          is_article_used: true,
+          is_donation_used: false,
+          is_activity_outcomes_connected: false,
+          is_asset_outcomes_connected: false,
+          is_template_documents_used: false
+        }
+      })
+    }
+
     mosqueAdd.id = jwt.sign(String(mosqueAdd.id), process.env.SECRET_KEY)
 
     return mosqueAdd;
@@ -141,14 +228,16 @@ const getJamaah = async (id) => {
           status: true,
           role: true,
         }
-      }
+      },
+      isVerifiedByAdmin: true
     }
   });
   return jamaahs;
 }
 
 const current = async (id) => {
-  const masjid_id = changeTokenToMasjidId(id);
+  const masjid_id = await changeTokenToMasjidId(id);
+  
   if(!masjid_id) {
     return {
       status: 400,
@@ -166,12 +255,14 @@ const current = async (id) => {
 }
 
 export default {
-    getAll,
-    create,
-    current,
-    currentByUser,
-    getJamaah,
-    getMasjidId,
-    changeTokenToMasjidId,
-    layoutMosqueData
+  verifiedMasjid,
+  getAllWithVerified,
+  getAll,
+  create,
+  current,
+  currentByUser,
+  getJamaah,
+  getMasjidId,
+  changeTokenToMasjidId,
+  layoutMosqueData
 }

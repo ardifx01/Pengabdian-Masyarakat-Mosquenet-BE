@@ -3,6 +3,7 @@ import adminController from "../controller/admin-controller.js";
 import multer from "multer";
 import path from 'path';
 import { administratorMiddleware } from "../middleware/administrator-middleware.js";
+import leaderController from '../controller/leader-controller.js';
 
 const adminRouter = new express.Router();
 adminRouter.use(administratorMiddleware);
@@ -72,7 +73,6 @@ adminRouter.post(
 );
 adminRouter.get('/kegiatan', adminController.kegiatanGet);
 adminRouter.delete('/kegiatan/:id', adminController.kegiatanDelete);
-// adminRouter.get('/kegiatan/:id', adminController.kegiatanDetail);
 adminRouter.put(
   '/kegiatan/:id', 
   upload.fields([
@@ -91,7 +91,6 @@ adminRouter.post(
 );
 adminRouter.get('/content', adminController.getContents);
 adminRouter.delete('/content/:id', adminController.deleteContent);
-// adminRouter.get('/content/:id', adminController.getContent);
 adminRouter.put(
   '/content/:id', 
   upload.fields([
@@ -100,12 +99,11 @@ adminRouter.put(
   adminController.updateContent
 );
 
-// adminRouter.post('/monitoring-kurban/animal', adminController.addAnimal);
-// adminRouter.post('/monitoring-kurban/sohibul');
-
 adminRouter.get('/dashboard', adminController.getDashboardData);
 adminRouter.post('/payment/kas', adminController.kasPayment);
 adminRouter.get('/payment/kas/check/:id', adminController.checkKasPayment);
+
+adminRouter.get('/mosque/configuration', leaderController.getConfiguration);
 
 export {
   adminRouter

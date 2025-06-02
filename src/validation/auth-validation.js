@@ -9,6 +9,7 @@ const registerSchema = Joi.object({
   isAdmin: Joi.boolean().required(),
   mosque_id: Joi.string().required(),
   token: Joi.string().required(),
+  role: Joi.string().valid('Ketua', 'Pengurus').required()
 });
 
 const makeTokenSchema = Joi.object({

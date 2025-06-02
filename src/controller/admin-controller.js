@@ -1,4 +1,3 @@
-// import animalServices from "../services/animal-services(optional).js";
 import asetServices from "../services/aset-services.js";
 import contentServices from "../services/content-services.js";
 import dashboardServices from "../services/dashboard-services.js";
@@ -58,6 +57,7 @@ const asetDelete = async (req, res) => {
 
 const kegiatanAdd = async (req, res) => {
   try {
+    if(req.body.outcomes) req.body = {...req.body, outcomes: JSON.parse(req.body.outcomes)};
     const createKegiatanResponse = await kegiatanServices.createKegiatan({ ...req.body, user_id: req.headers.authorization }, req.files);
     return res.status(createKegiatanResponse.status).json(createKegiatanResponse);
   } catch (e) {
@@ -95,6 +95,7 @@ const kegiatanDetail = async (req, res) => {
 
 const kegiatanUpdate = async (req, res) => {
   try {
+    req.body = {...req.body, outcomes: JSON.parse(req.body.outcomes)};
     const editKegiatanResponse = await kegiatanServices.editKegiatan({...req.body, id: req.params.id}, req.files);
     return res.status(editKegiatanResponse.status).json(editKegiatanResponse);
   } catch (e) {
@@ -108,6 +109,7 @@ const kegiatanUpdate = async (req, res) => {
 const kegiatanDelete = async (req, res) => {
   try {
     const { id } = req.params;
+    console.log(id);
     const deleteKegiatanResponse = await kegiatanServices.deleteKegiatan({kegiatan_id: id});
     return res.status(deleteKegiatanResponse.status).json(deleteKegiatanResponse);
   } catch (e) {
@@ -121,6 +123,7 @@ const kegiatanDelete = async (req, res) => {
 const getDashboardData = async (req, res) => {
   try {
     const getDashboardResponse = await dashboardServices.getDashboardData({ user_id: req.headers.authorization });
+    console.log(getDashboardResponse);
     return res.status(getDashboardResponse.status).json(getDashboardResponse);
   } catch (e) {
     console.log(e);
@@ -259,5 +262,4 @@ export default {
   getContent,
   updateContent,
   deleteContent
-  // addAnimal
 };

@@ -37,6 +37,28 @@ const createKegiatan = async (requestData, requestFiles) => {
   });
 
   if(saveKegiatan) {
+    if(requestData.outcomes) {
+      const data = await Promise.all(requestData.outcomes.map(async (value) => {
+        const saveOutcome = await prismaClient.outcomes.create({
+          data: {
+            amount: value.amount,
+            date: new Date().toISOString(),
+            reason: `Pengeluaran Kegiatan ${requestData.name} - ${value.reason}`,
+            masjid_id: masjidId,
+            isActivity: true
+          }
+        });
+
+        const mapActivityOutcome = await prismaClient.activityOutcomes.create({
+          data: {
+            outcome_id: saveOutcome.id,
+            activity_id: saveKegiatan.id
+          }
+        });
+
+        return mapActivityOutcome;
+      }));
+    }
     return {
       message: "Kegiatan Masjid berhasil didata",
       status: 200
@@ -66,7 +88,7 @@ const getKegiatan = async (request) => {
       date: true,
       pic: true,
       address: true,
-      image: true
+      image: true,
     }
   });
 
@@ -99,14 +121,29 @@ const detailKegiatan = async (request) => {
       address: true,
       description: true,
       pic: true,
-      video_documentation: true
+      video_documentation: true,
+      Pengeluaran: {
+        select: {
+          outcomes: {
+            select: {
+              amount: true,
+              reason: true
+            }
+          }
+        }
+      }
     }
   });
+
+  const {Pengeluaran, ...kegiatanConvertObject} = kegiatan
+  const dataKegiatan = {...kegiatanConvertObject, outcomes: Pengeluaran.map(val => val.outcomes)};
   
-  if(kegiatan) {
+  if(dataKegiatan) {
     const newDate = new Date(kegiatan.date).toISOString().split("T")[0];
     const time = `${new Date(kegiatan.date).getUTCHours().toString().padStart(2, "0")}:${new Date(kegiatan.date).getUTCMinutes().toString().padStart(2, "0")}`;
-    const detailKegiatanWithTime = {...kegiatan, time, date: newDate};
+
+    const detailKegiatanWithTime = {...dataKegiatan, time, date: newDate};
+
     return {
       message: "Kegiatan Masjid berhasil didapatkan",
       status: 200,
@@ -172,6 +209,35 @@ const editKegiatan = async (requestData, requestFiles) => {
   });
 
   if(saveKegiatan) {
+    if(requestData.outcomes) {
+      const currentOutcomes = await prismaClient.activityOutcomes.findMany({ where: { activity_id: saveKegiatan.id }})
+      await prismaClient.activityOutcomes.deleteMany({ where: { activity_id: saveKegiatan.id } })
+      await Promise.all(currentOutcomes.map(async (value) => {
+        const removeOutcomes = await prismaClient.outcomes.delete({ where: { id: value.outcome_id } });
+        return removeOutcomes;
+      }));
+
+      const newData = await Promise.all(requestData.outcomes.map(async (value) => {
+        const saveOutcome = await prismaClient.outcomes.create({
+          data: {
+            amount: value.amount,
+            date: new Date().toISOString(),
+            reason: `Pengeluaran Kegiatan ${requestData.name} - ${value.reason.replace(`Pengeluaran Kegiatan ${requestData.name} - `, '')}`,
+            masjid_id: data.masjid_id,
+            isActivity: true
+          }
+        });
+
+        const mapActivityOutcome = await prismaClient.activityOutcomes.create({
+          data: {
+            outcome_id: saveOutcome.id,
+            activity_id: saveKegiatan.id
+          }
+        });
+
+        return mapActivityOutcome;
+      }));
+    }
     return {
       message: "Kegiatan Masjid berhasil diubah",
       status: 200
@@ -199,16 +265,29 @@ const deleteKegiatan = async (request) => {
   const deleteImage = fileServices.deleteFile(kegiatan.image);
   if(deleteImage.status == 500) return deleteImage;
 
-  const deleteKegiatanData = await prismaClient.activityInformations.delete({
+  const deleteActivityOutcomes = await prismaClient.activityOutcomes.deleteMany({
     where: {
-      id: request.kegiatan_id
+      activity_id: request.kegiatan_id
     }
   });
 
-  if(deleteKegiatanData) {
-    return {
-      status: 200,
-      message: "Berhasil menghapus kegiatan"
+  if(deleteActivityOutcomes) {
+    const deleteKegiatanData = await prismaClient.activityInformations.delete({
+      where: {
+        id: request.kegiatan_id
+      }
+    });
+  
+    if(deleteKegiatanData) {
+      return {
+        status: 200,
+        message: "Berhasil menghapus kegiatan"
+      }
+    } else {
+      return {
+        status: 500,
+        message: "Gagal menghapus kegiatan"
+      }
     }
   } else {
     return {
@@ -216,6 +295,7 @@ const deleteKegiatan = async (request) => {
       message: "Gagal menghapus kegiatan"
     }
   }
+
 }
 
 const currentByMasjidId = async (id) => {

@@ -5,6 +5,12 @@ const updateRoleSchema = Joi.object({
   role: Joi.string().required()
 });
 
+const verifyUserSchema = Joi.object({
+  email: Joi.string().required(),
+  verify: Joi.boolean().required()
+})
+
 export default {
-    updateRoleSchema
+    updateRoleSchema,
+    verifyUserSchema
 }

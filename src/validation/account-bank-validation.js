@@ -1,7 +1,7 @@
 import Joi from "joi";
 
 const createPurposeSchema = Joi.object({
-  name: Joi.string().required(),
+  name: Joi.string().trim().required(),
   user_id: Joi.string().required(),
 });
 

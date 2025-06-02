@@ -118,8 +118,51 @@ const getUserBasedHashID = async (user_id) => {
   else return null;
 }
 
+const verifyUser = async (request) => {
+  request = validate(userValidation.verifyUserSchema, request);
+
+  const user = await prismaClient.users.findFirst({
+    where: {
+      email: request.email,
+    },
+    select: {
+      admin: true
+    }
+  });
+
+  
+  if(!user) {
+    return {
+      status: 400,
+      message: "Email tidak ditemukan"
+    };
+  }
+
+  const updateUser = await prismaClient.users.update({
+    where: {
+      email: request.email
+    },
+    data: {
+      isVerifiedByAdmin: request.verify
+    }
+  });
+
+  if(updateUser) {
+    return {
+      message: request.verify ? "Jamaah berhasil diverifikasi" : "Verifikasi Jamaah berhasil dibatalkan",
+      status: 200
+    }
+  } else {
+    return {
+      message: request.verify ? "Jamaah gagal diverifikasi" : "Verifikasi jamaah gagal dibatalkan",
+      status: 500
+    }
+  }
+}
+
 export default {
     getAll,
     updateUserRole,
-    getUserBasedHashID
+    getUserBasedHashID,
+    verifyUser
 }

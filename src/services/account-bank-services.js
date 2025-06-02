@@ -273,6 +273,18 @@ const saveDonation = async (request, requestFiles) => {
       type: type.purpose
     }
   })
+
+  if(save) {
+    return {
+      status: 200,
+      message: "Donasi berhasil dilakukan. Terima kasih",
+    }
+  } else {
+    return {
+      status: 500,
+      message: "Donasi gagal terdata dikarenakan kesalahan. Coba lagi!"
+    }
+  }
 }
 
 export default {

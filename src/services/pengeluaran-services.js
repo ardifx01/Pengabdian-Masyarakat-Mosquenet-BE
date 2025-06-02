@@ -106,7 +106,7 @@ const getOutcome = async (request) => {
   if(masjidId.status) {
     return masjidId
   }
- 
+
   const getMosqueOutcome = await prismaClient.outcomes.findMany({
     where: {
       masjid_id: masjidId
@@ -114,15 +114,29 @@ const getOutcome = async (request) => {
     select: {
       amount: true,
       date: true,
-      reason: true
+      reason: true,
+      aset: true,
+      isActivity: true,
+
     }
   });
 
+  const mosqueConfiguration = await prismaClient.configuration.findFirst({ where: { masjid_id: masjidId }});
+
+  const data = getMosqueOutcome.map(value => ({
+    ...((!mosqueConfiguration.is_asset_outcomes_connected && value.aset) || (!mosqueConfiguration.is_activity_outcomes_connected && value.isActivity) ? {} : { ...value })
+  })).filter(value => Object.keys(value).length > 0).map((value => {
+    const { isActivity, ...data } = value;
+    return data
+  }));
+
+
   return {
-    message: "Daftar Pemasukan berhasil didapatkan!",
+    message: "Daftar Pengeluaran berhasil didapatkan!",
     status: 200,
-    outcomes: getMosqueOutcome
+    outcomes: data
   };
+
 }
 
 export default {

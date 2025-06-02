@@ -2,7 +2,7 @@ import Joi from 'joi';
 
 const addCategorySchema = Joi.object({
   user_id: Joi.string().required(),
-  name: Joi.string().required(),
+  name: Joi.string().trim().required(),
 });
 
 const getCategorySchema = Joi.object({

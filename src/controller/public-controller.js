@@ -7,6 +7,7 @@ import kegiatanServices from "../services/kegiatan-services.js";
 import criticsSuggestionServices from "../services/critics-suggestion-services.js";
 import accountBankServices from "../services/account-bank-services.js";
 import contentServices from "../services/content-services.js";
+import dashboardServices from "../services/dashboard-services.js";
 
 const getProvinceList = (req, res) => {
     try {
@@ -61,6 +62,7 @@ const getMosqueList = async (req, res) => {
             mosques
         });
     } catch (e) {
+      console.log(e);
         return res.status(400).json({
             message: e.message
         });
@@ -154,6 +156,21 @@ const getDonation = async (req, res) => {
   }
 }
 
+const getReports = async (req, res) => {
+  try {
+    if(req.params.id) {
+      const getMosqueReportsResponse = await dashboardServices.publicReport({user_id: req.params.id});
+      return res.status(getMosqueReportsResponse.status).json(getMosqueReportsResponse);
+    } else {
+      throw Error("Akses Illegal!");
+    }
+  } catch (e) {
+    return res.status(500).json({
+      message: "Rekening donasi gagal didapatkan. Coba lagi"
+    })
+  }
+}
+
 const sendDonation = async (req, res) => {
   try {
     if(req.params && req.params.id && req.params.donation_id) {
@@ -189,5 +206,6 @@ export default {
     getDonationsList,
     getDonation,
     sendDonation,
-    getContent
+    getContent,
+    getReports
 }

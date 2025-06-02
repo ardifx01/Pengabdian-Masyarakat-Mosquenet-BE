@@ -9,6 +9,13 @@ const createSchema = Joi.object({
   ward_id:  Joi.number().required(),
 });
 
+const verifiedSchema = Joi.object({
+  id: Joi.string().required(),
+  verified: Joi.boolean().required()
+});
+
+
 export default {
-    createSchema
+    createSchema,
+    verifiedSchema,
 }

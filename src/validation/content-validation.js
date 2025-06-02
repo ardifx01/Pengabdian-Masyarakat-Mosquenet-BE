@@ -1,14 +1,14 @@
 import Joi from 'joi';
 
 const createContentSchema = Joi.object({
-  title: Joi.string().required(),
+  title: Joi.string().trim().required(),
   contents: Joi.string().required(),
   user_id: Joi.string().required(),
   visual_content: Joi.string().optional()
 });
 
 const updateContentSchema = Joi.object({
-  title: Joi.string().required(),
+  title: Joi.string().trim().required(),
   contents: Joi.string().required(),
   visual_content: Joi.string().optional(),
   id: Joi.string().required(),

@@ -14,259 +14,248 @@ datasource db {
 }
 
 model Users {
-  id                   Int                      @id @default(autoincrement())
-  name                 String                   @db.VarChar(30)
-  email                String                   @db.VarChar(60) @unique
-  password             String
-  telp                 String                   @db.VarChar(20) @unique
-  admin_id             Int                      @unique
-  master_id            Int                      @unique
-  jamaah_id            Int                      @unique
-  isVerified           Boolean                  @default(false)
-  tokenVerification    String                   @unique
+  id                                 Int                     @id @default(autoincrement())
+  name                               String                  @db.VarChar(30)
+  email                              String                  @db.VarChar(60) @unique
+  password                           String
+  telp                               String                  @db.VarChar(20) @unique
+  admin_id                           Int                     @unique
+  master_id                          Int                     @unique
+  jamaah_id                          Int                     @unique
+  isVerified                         Boolean                 @default(false)
+  isVerifiedByAdmin                  Boolean                 @default(false)
+  tokenVerification                  String                  @unique
 
-  admin                Admins                   @relation(fields: [admin_id], references: [id])
-  master               Masters                  @relation(fields: [master_id], references: [id])
-  jamaah               Jamaahs                  @relation(fields: [jamaah_id], references: [id])
-  Loanings             LoaningBooks[]
+  admin                              Admins                  @relation(fields: [admin_id], references: [id])
+  master                             Masters                 @relation(fields: [master_id], references: [id])
+  jamaah                             Jamaahs                 @relation(fields: [jamaah_id], references: [id])
+  Loanings                           LoaningBooks[]
 } 
 
 model Admins {
-  id                   Int                      @id  @default(autoincrement())
-  status               Boolean                  @default(false)
-  role                 AdminRole
+  id                                 Int                     @id  @default(autoincrement())
+  status                             Boolean                 @default(false)
+  role                               AdminRole
 
-  users                Users[]
+  users                              Users[]
 }
 
 model Masters {
-  id                   Int                      @id @default(autoincrement())
-  status               Boolean                  @default(false)
+  id                                 Int                     @id @default(autoincrement())
+  status                             Boolean                 @default(false)
     
-  users                Users[]
+  users                              Users[]
 }
 
 model CriticsAndSuggestion {
-  id                   Int                      @id @default(autoincrement())
-  message              String
+  id                                 Int                     @id @default(autoincrement())
+  message                            String
 }
 
 model Jamaahs {
-  id                   Int                      @id @default(autoincrement())
-  masjid_id            Int
+  id                                 Int                     @id @default(autoincrement())
+  masjid_id                          Int
 
-  users                Users[]
-  masjid               Masjids                  @relation(fields: [masjid_id], references: [id])
+  users                              Users[]
+  masjid                             Masjids                 @relation(fields: [masjid_id], references: [id])
 }
 
 model Masjids {
-  id                   Int                      @id @default(autoincrement())
-  name                 String
-  location             String
-  subdistrict_id       Int 
-  cityorregency_id     Int
-  province_id          Int
-  ward_id              Int
+  id                                 Int                     @id @default(autoincrement())
+  name                               String
+  location                           String
+  subdistrict_id                     Int 
+  cityorregency_id                   Int
+  province_id                        Int
+  ward_id                            Int
+  verified                           Boolean                 @default(false)
 
-  jamaah               Jamaahs[]
-  activityinformations ActivityInformations[]
-  incomes              Incomes[]
-  incomes_sources      IncomeSources[]
-  outcomes             Outcomes[]
-  outcomes_reason      OutcomeReason[]
-  assets               Assets[]
-  accountBank          AccountBank[]
-  purpose              PurposeAccountBank[]
-  mosqueArsips         MosqueArsips[]
-  mosqueLetterTemplate MosqueLetterTemplate[]
-  donation             Donation[]
-  animals              AnimalsQurban[]
-  books                Books[]
-  contents             Contents[]
+  jamaah                             Jamaahs[]
+  activityinformations               ActivityInformations[]
+  incomes                            Incomes[]
+  incomes_sources                    IncomeSources[]
+  outcomes                           Outcomes[]
+  outcomes_reason                    OutcomeReason[]
+  assets                             Assets[]
+  accountBank                        AccountBank[]      
+  purpose                            PurposeAccountBank[]
+  mosqueArsips                       MosqueArsips[]
+  mosqueLetterTemplate               MosqueLetterTemplate[]
+  donation                           Donation[]
+  books                              Books[]
+  contents                           Contents[]
 }
 
 model Incomes {
-  id                   Int                     @id @default(autoincrement())
-  amount               Float                  
-  date                 DateTime
-  masjid_id            Int
-  source               String
+  id                                 Int                    @id @default(autoincrement())
+  amount                             Float                  
+  date                               DateTime
+  masjid_id                          Int
+  source                             String
 
-  masjid               Masjids                @relation(fields: [masjid_id], references: [id])
+  masjid                             Masjids                @relation(fields: [masjid_id], references: [id])
 }
 
 model IncomeSources {
-  id                   Int                    @id @default(autoincrement())
-  masjid_id            Int                     
-  name                 String
+  id                                 Int                    @id @default(autoincrement())
+  masjid_id                          Int                     
+  name                               String
 
-  masjid               Masjids                @relation(fields: [masjid_id], references: [id])
+  masjid                             Masjids                @relation(fields: [masjid_id], references: [id])
 }
 
 model Outcomes {
-  id                   Int                    @id @default(autoincrement())
-  amount               Float             
-  date                 DateTime
-  reason               String
-  masjid_id            Int
+  id                                 Int                    @id @default(autoincrement())
+  amount                             Float             
+  date                               DateTime
+  reason                             String
+  isActivity                         Boolean                @default(false)
+  masjid_id                          Int
 
-  masjid               Masjids                @relation(fields: [masjid_id], references: [id])
-  aset                 Assets?    
+  masjid                             Masjids                @relation(fields: [masjid_id], references: [id])
+  aset                               Assets?
+  activity                           ActivityOutcomes?    
 }
 
 model OutcomeReason {
-  id                   Int                    @id @default(autoincrement())
-  masjid_id            Int                     
-  name                 String
+  id                                 Int                    @id @default(autoincrement())
+  masjid_id                          Int                     
+  name                               String
 
-  masjid               Masjids                @relation(fields: [masjid_id], references: [id])
+  masjid                             Masjids                @relation(fields: [masjid_id], references: [id])
 }
 
 model ActivityInformations {
-  id                   Int                     @id @default(autoincrement())
-  date                 DateTime
-  address              String
-  image                String?
-  name                 String
-  description          String
-  pic                  String
-  document             String?
-  masjid_id            Int
-  video_documentation  String?
+  id                                 Int                     @id @default(autoincrement())
+  date                               DateTime
+  address                            String
+  image                              String?
+  name                               String
+  description                        String
+  pic                                String
+  document                           String?
+  masjid_id                          Int
+  video_documentation                String?
 
-  Masjid               Masjids                 @relation(fields: [masjid_id], references: [id])
+  Masjid                             Masjids                 @relation(fields: [masjid_id], references: [id])
+  Pengeluaran                        ActivityOutcomes[] 
+}
+
+model ActivityOutcomes {
+  id                                 Int                     @id @default(autoincrement())
+  activity_id                        Int                    
+  outcome_id                         Int                     @unique
+
+  activity                           ActivityInformations    @relation(fields: [activity_id], references: [id])
+  outcomes                           Outcomes                @relation(fields: [outcome_id], references: [id])
 }
 
 model Assets {
-  id                   Int                     @id @default(autoincrement())
-  name                 String
-  amount               Int
-  unit                 String
-  masjid_id            Int
-  condition            Condition 
-  outcomes_id          Int                     @unique              
+  id                                 Int                     @id @default(autoincrement())
+  name                               String
+  amount                             Int
+  unit                               String
+  masjid_id                          Int
+  condition                          Condition 
+  outcomes_id                        Int                     @unique              
 
-  Masjid               Masjids                 @relation(fields: [masjid_id], references: [id])
-  Pengeluaran          Outcomes                @relation(fields: [outcomes_id], references: [id])
+  Masjid                             Masjids                 @relation(fields: [masjid_id], references: [id])
+  Pengeluaran                        Outcomes                @relation(fields: [outcomes_id], references: [id])
 }
 
 model MosqueArsips {
-  id                   Int                     @id @default(autoincrement())
-  title                String                  
-  masjid_id            Int
-  document             String
+  id                                 Int                     @id @default(autoincrement())
+  title                              String                  
+  masjid_id                          Int
+  document                           String
 
-  Masjid               Masjids                 @relation(fields: [masjid_id], references: [id])
+  Masjid                             Masjids                 @relation(fields: [masjid_id], references: [id])
 }
 
 model MosqueLetterTemplate {
-  id                   Int                     @id @default(autoincrement())
-  masjid_id            Int
-  document             String
-  type                 String
+  id                                 Int                     @id @default(autoincrement())
+  masjid_id                          Int
+  document                           String
+  type                               String
 
-  Masjid               Masjids                 @relation(fields: [masjid_id], references: [id])
+  Masjid                             Masjids                 @relation(fields: [masjid_id], references: [id])
 }
 
 model Donation {
-  id                   Int                     @id @default(autoincrement())
-  name                 String
-  masjid_id            Int
-  verified             Boolean                 @default(false)
-  amount               Int
-  image                String
-  type                 String
-  incomes_id           Int?
+  id                                 Int                     @id @default(autoincrement())
+  name                               String
+  masjid_id                          Int
+  verified                           Boolean                 @default(false)
+  amount                             Int
+  image                              String
+  type                               String
+  incomes_id                         Int?
 
-  Masjid               Masjids                 @relation(fields: [masjid_id], references: [id])
-  Qurban               QurbanPayment[]
+  Masjid                             Masjids                 @relation(fields: [masjid_id], references: [id])
 }
 
-model Animal {
-  id                   Int                     @id @default(autoincrement())
-  name                 QurbanAnimalsName
-  weight               Float
-  amount               Int
-
-  qurban               AnimalsQurban?
-}
-
-model AnimalsQurban {
-  id                   Int                     @id @default(autoincrement())
-  masjid_id            Int                     
-  animal_id            Int                     @unique
-  price_per_kilo       Int
-
-
-  Masjid               Masjids                 @relation(fields: [masjid_id], references: [id])
-  Animal               Animal                  @relation(fields: [animal_id], references: [id])
-  Transaction          QurbanPayment[]
-}
-
-model QurbanPayment {
-  id                   Int                     @id @default(autoincrement())
-  animal_id            Int                      
-  payment_id           Int
-  name                 String
-  qurban_code          String
-  is_received          Boolean
-  weight               Float
-
-  Payment              Donation                @relation(fields: [payment_id], references: [id])
-  Animal               AnimalsQurban           @relation(fields: [animal_id], references: [id])
-}
 
 model AccountBank {
-  id                   Int                     @id @default(autoincrement())
-  name                 String
-  image                String?
-  bank                 String
-  account              String?
-  alias_name           String
-  email                String
-  masjid_id            Int
-  purpose              String
+  id                                 Int                     @id @default(autoincrement())
+  name                               String
+  image                              String?
+  bank                               String
+  account                            String?
+  alias_name                         String
+  email                              String
+  masjid_id                          Int
+  purpose                            String
 
-  masjid               Masjids                 @relation(fields: [masjid_id], references: [id])
+  masjid                             Masjids                 @relation(fields: [masjid_id], references: [id])
 }
 
 model PurposeAccountBank {
-  id                   Int                     @id @default(autoincrement())
-  name                 String
-  masjid_id            Int
+  id                                 Int                     @id @default(autoincrement())
+  name                               String
+  masjid_id                          Int
 
-  masjid               Masjids                 @relation(fields: [masjid_id], references: [id])
+  masjid                             Masjids                 @relation(fields: [masjid_id], references: [id])
 }
 
 model Books {
-  id                   Int                     @id @default(autoincrement())
-  name                 String
-  description          String
-  isBorrow             Boolean                 @default(false)
-  masjid_id            Int
+  id                                 Int                     @id @default(autoincrement())
+  name                               String
+  description                        String
+  isBorrow                           Boolean                 @default(false)
+  masjid_id                          Int
 
-  Masjid               Masjids                 @relation(fields: [masjid_id], references: [id])
-  Loaning              LoaningBooks[]
+  Masjid                             Masjids                 @relation(fields: [masjid_id], references: [id])
+  Loaning                            LoaningBooks[]
 }
 
 model LoaningBooks {
-  id                   Int                     @id @default(autoincrement())
-  users_id             Int
-  books_id             Int
+  id                                 Int                     @id @default(autoincrement())
+  users_id                           Int
+  books_id                           Int
 
-  User                 Users                   @relation(fields: [users_id], references: [id])
-  Book                 Books                   @relation(fields: [books_id], references: [id])
+  User                               Users                   @relation(fields: [users_id], references: [id])
+  Book                               Books                   @relation(fields: [books_id], references: [id])
 }
 
 model Contents {
-  id                   Int                     @id @default(autoincrement())
-  masjid_id            Int
-  title                String
-  post_date            DateTime
-  contents             String
-  visual_content       String?
+  id                                 Int                     @id @default(autoincrement())
+  masjid_id                          Int
+  title                              String
+  post_date                          DateTime
+  contents                           String
+  visual_content                     String?
 
-  masjid               Masjids                 @relation(fields: [masjid_id], references: [id])
+  masjid                             Masjids                 @relation(fields: [masjid_id], references: [id])
+}
+
+model Configuration {
+  id                                 Int                      @id @default(autoincrement())
+  masjid_id                          Int                      @unique
+  is_article_used                    Boolean
+  is_donation_used                   Boolean
+  is_activity_outcomes_connected     Boolean
+  is_asset_outcomes_connected        Boolean
+  is_template_documents_used         Boolean
 }
 
 enum AdminRole {
@@ -287,11 +276,4 @@ enum Condition {
 enum PaymentStatus {
   PAID
   PENDING
-}
-
-enum QurbanAnimalsName {
-  Unta
-  Sapi
-  Domba
-  Kambing
 }

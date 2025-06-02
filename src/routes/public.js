@@ -51,6 +51,7 @@ publicRouter.get('/mosque/kegiatan/:id', publicController.getKegiatan);
 publicRouter.get('/mosque/konten/:id', publicController.getContent);
 publicRouter.get('/mosque/user/:id', publicController.getMosqueByJamaah);
 publicRouter.get('/mosque/id/:id', publicController.getMosqueById);
+publicRouter.get('/mosque/laporan/:id', publicController.getReports);
 publicRouter.get('/mosque/donations/:id', publicController.getDonationsList);
 publicRouter.get('/mosque/donations/:id/get/:donation_id', publicController.getDonation);
 

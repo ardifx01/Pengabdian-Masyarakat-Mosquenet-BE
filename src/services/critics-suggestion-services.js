@@ -24,6 +24,23 @@ const create = async (request) => {
   }
 }
 
+const get = async () => {
+  const getCritics = await prismaClient.criticsAndSuggestion.findMany();
+  if(getCritics) {
+    return {
+      message: "Kritik dan Saran berhasil didapatkan.",
+      status: 200,
+      critics: getCritics
+    }
+  } else {
+    return {
+      message: "Kritik dan Saran tidak berhasil didapatkan. Coba lagi",
+      status: 500
+    }
+  }
+}
+
 export default {
-  create
+  create,
+  get
 }

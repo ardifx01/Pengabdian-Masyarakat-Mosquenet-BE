@@ -3,13 +3,7 @@ import { getCategorySchema } from "../validation/pemasukan-validation.js"
 import { validate } from "../validation/validation.js"
 import mosqueServices from "./mosque-services.js";
 
-const report = async (request) => {
-  request = validate(getCategorySchema, request);
-  const masjidId = await mosqueServices.getMasjidId(request.user_id);
-  if(masjidId.status) {
-    return masjidId
-  }
-
+const getReportByMasjidId = async (masjidId) => {
   const income = await prismaClient.incomes.findMany({
     where: {
       masjid_id: masjidId,
@@ -28,9 +22,20 @@ const report = async (request) => {
     select: {
       amount: true,
       date: true,
-      reason: true
+      reason: true,
+      aset: true,
+      isActivity: true
     }
   });
+
+  const mosqueConfiguration = await prismaClient.configuration.findFirst({ where: { masjid_id: masjidId }});
+
+  const outcomeData = outcome.map(value => ({
+    ...((!mosqueConfiguration.is_asset_outcomes_connected && value.aset) || (!mosqueConfiguration.is_activity_outcomes_connected && value.isActivity) ? {} : { ...value })
+  })).filter(value => Object.keys(value).length > 0).map((value => {
+    const { isActivity, ...data } = value;
+    return data
+  }));
 
   const reports = income.map(value => {
     const { source, ...rest } = value;
@@ -41,7 +46,7 @@ const report = async (request) => {
     }
   });
 
-  reports.push(...outcome.map(value => {
+  reports.push(...outcomeData.map(value => {
     const { reason, ...rest } = value;
     return {
       ...rest,
@@ -51,8 +56,36 @@ const report = async (request) => {
   }));
 
   const results = reports.sort((a, b) => new Date(a.date) - new Date(b.date));
+  return results;
+}
+
+const report = async (request) => {
+  request = validate(getCategorySchema, request);
+  const masjidId = await mosqueServices.getMasjidId(request.user_id);
+  if(masjidId.status) {
+    return masjidId
+  }
+
+  const results = await getReportByMasjidId(masjidId);
+
   return {
     message: "Laporan keuangan berhasil diolah!",
+    status: 200,
+    reports: results
+  };
+}
+
+const publicReport = async (request) => {
+  request = validate(getCategorySchema, request);
+  const masjidId = await mosqueServices.changeTokenToMasjidId(request.user_id);
+  const masjid = await prismaClient.masjids.findFirst({ where: { id: masjidId }});
+  if(!masjid) {
+    return { status: 400, message: "Akses illegal!" };
+  }
+
+  const results = await getReportByMasjidId(masjidId);
+  return {
+    message: "Laporan Keuangan berhasil diolah",
     status: 200,
     reports: results
   };
@@ -89,10 +122,23 @@ const getPengeluaranAmount = async (request) => {
   const pengeluaran = await prismaClient.outcomes.findMany({
     where: {
       masjid_id: masjidId
+    },
+    select: {
+      amount: true,
+      date: true,
+      reason: true,
+      aset: true,
+      isActivity: true
     }
   });
 
-  const { amount } = pengeluaran.reduce((acc, curr) => {
+  const mosqueConfiguration = await prismaClient.configuration.findFirst({ where: { masjid_id: masjidId }});
+
+  const outcomeData = pengeluaran.map(value => ({
+    ...((!mosqueConfiguration.is_asset_outcomes_connected && value.aset) || (!mosqueConfiguration.is_activity_outcomes_connected && value.isActivity) ? {} : { ...value })
+  })).filter(value => Object.keys(value).length > 0);
+
+  const { amount } = outcomeData.reduce((acc, curr) => {
     acc.amount += curr.amount;
     return acc;
   }, { amount: 0 });
@@ -169,5 +215,6 @@ const getDashboardData = async (request) => {
 
 export default {
   report,
+  publicReport,
   getDashboardData
 };

@@ -86,7 +86,7 @@ const register = async (request) => {
         const admin = await prismaClient.admins.create({
             data: {
                 status: request.isAdmin,
-                role: 'Pengurus',
+                role: request.role,
             },
             select: {
                 id: true,
@@ -115,7 +115,8 @@ const register = async (request) => {
                 admin_id: admin.id,
                 master_id: master.id,
                 jamaah_id: jamaah.id,
-                tokenVerification: request.token
+                tokenVerification: request.token,
+                isVerifiedByAdmin: request.role === "Ketua"
             }
         });
     
@@ -139,6 +140,25 @@ const login = async (request) => {
         where: {
             email: request.email,
         },
+        select: {
+          id: true,
+          password: true,
+          admin_id: true,
+          master_id: true,
+          jamaah_id: true,
+          isVerified: true,
+          isVerifiedByAdmin: true,
+          jamaah: {
+            select: {
+              masjid: {
+                select: {
+                  id: true,
+                  verified: true
+                }
+              }
+            }
+          }
+        }
     });
 
     if (!user) {
@@ -154,7 +174,15 @@ const login = async (request) => {
 
     if (!user.isVerified) {
       throw new ResponseError(404, "Verifikasi akun anda terlebih dahulu!");
-  }
+    }
+
+    if(!user.jamaah.masjid.verified) {
+      throw new ResponseError(404, "Tunggu akun masjid anda untuk diverifikasi oleh Admin");
+    }
+
+    if(!user.isVerifiedByAdmin) {
+      throw new ResponseError(404, "Tunggu akun anda untuk diverifikasi oleh Ketua Pengurus Masjid anda");
+    }
 
     const admin = await prismaClient.admins.findFirst({
         where: {
@@ -179,6 +207,7 @@ const login = async (request) => {
         master, 
         jamaah,
         id: jwt.sign(String(user.id), process.env.SECRET_KEY),
+        masjid_id: jwt.sign(String(user.jamaah.masjid.id), process.env.SECRET_KEY)
     };
 }
 

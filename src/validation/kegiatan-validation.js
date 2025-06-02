@@ -9,6 +9,12 @@ const createKegiatanSchema = Joi.object({
   date: Joi.date().required(),
   time: Joi.string().required(),
   user_id: Joi.string().required(),
+  outcomes: Joi.array().items(
+    Joi.object({
+      amount: Joi.number().required(),
+      reason: Joi.string().required()
+    })
+  ).optional()
 });
 
 const updateKegiatanSchema = Joi.object({
@@ -20,6 +26,12 @@ const updateKegiatanSchema = Joi.object({
   date: Joi.date().required(),
   time: Joi.string().required(),
   id: Joi.string().required(),
+  outcomes: Joi.array().items(
+    Joi.object({
+      amount: Joi.number().required(),
+      reason: Joi.string().required()
+    })
+  ).optional()
 });
 
 const deleteKegiatanSchema = Joi.object({
