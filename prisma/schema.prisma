@@ -93,6 +93,7 @@ model Incomes {
   masjid_id                          Int
   source                             String
 
+  donations                          Donation?
   masjid                             Masjids                @relation(fields: [masjid_id], references: [id])
 }
 
@@ -189,9 +190,10 @@ model Donation {
   amount                             Int
   image                              String
   type                               String
-  incomes_id                         Int?
+  incomes_id                         Int?                    @unique
 
   Masjid                             Masjids                 @relation(fields: [masjid_id], references: [id])
+  Income                             Incomes?                @relation(fields: [incomes_id], references: [id])
 }
 
 
