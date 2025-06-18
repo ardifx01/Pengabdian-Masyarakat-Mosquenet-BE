@@ -6,6 +6,7 @@ import mosqueServices from "./mosque-services.js";
 import path from 'path';
 import jwt from 'jsonwebtoken'
 import fileServices from "./file-services.js";
+import sendMailServices from "./send-mail-services.js";
 
 const createContent = async (requestData, requestFiles) => {
   requestData = validate(createContentSchema, requestData);
@@ -32,6 +33,50 @@ const createContent = async (requestData, requestFiles) => {
   });
 
   if(saveContent) {
+    const masjid = await prismaClient.masjids.findFirst({
+      where: {
+        id: masjidId
+      }, 
+      select: {
+        name: true,
+      }
+    });
+
+    const user = await prismaClient.users.findMany({
+      where: {
+        jamaah: {
+          masjid_id: masjidId
+        }
+      },
+      select: {
+        email: true
+      }
+    });
+
+    const jamaah = user.map(value => value.email);
+    const url = `${process.env.MAIN_URL}konten/${saveContent.id}`;
+
+    sendMailServices.sendMultiMail(
+      `Artikel terbaru dari ${masjid.name}`,
+      jamaah,
+      "Gagal mengirimkan notifikasi artikel",
+      "konten-notification.html",
+      [
+        {
+          key: "{{MASJID}}",
+          value: masjid.name
+        },
+        {
+          key: "{{JUDUL}}",
+          value: saveContent.title
+        },
+        {
+          key: "{{LINK KONTEN}}",
+          value: url
+        },
+      ]
+    );
+    
     return {
       message: "Konten masjid berhasil dikirim",
       status: 200

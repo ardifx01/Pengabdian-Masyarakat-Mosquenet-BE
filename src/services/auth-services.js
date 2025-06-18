@@ -5,41 +5,8 @@ import mosqueServices from "./mosque-services.js";
 import bcrypt from 'bcrypt';
 import { ResponseError } from "../error/response-error.js";
 import jwt from 'jsonwebtoken';
-import fs from 'fs';
-import path, { dirname } from 'path';
-import { fileURLToPath } from "url";
-import nodemailer from 'nodemailer';
 import userServices from "./user-services.js";
-
-const sendMail = (subject, email, errorMessage, tempFileName, key, value) => {
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = dirname(__filename);
-  const template = fs.readFileSync(path.join(__dirname, `../email/${tempFileName}`), 'utf8');
-  const content = template.replace(key, value);
-
-  const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
-    secure: false,
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASSWORD
-    }
-  });
-
-  const mail = {
-    from: process.env.EMAIL_USER,
-    to: email,
-    subject: subject,
-    html: content
-  };
-
-  transporter.sendMail(mail, (error, info) => {
-    if (error) {
-      throw new ResponseError(404, errorMessage);
-    }
-  });  
-}
+import sendMailServices from "./send-mail-services.js";
 
 const registerToken = async (request) => {
   try {
@@ -54,7 +21,7 @@ const registerToken = async (request) => {
     const token = jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '24h' });
     const verificationLink = `${process.env.VERIFICATION_URL}${encodeURIComponent(token)}`;
 
-    sendMail(
+    sendMailServices.sendMail(
       "Verifikasi Akun anda di Mosquenet",
       request.email,
       "Gagal verifikasi akun!",
@@ -277,7 +244,7 @@ const findEmail = async (request) => {
         }
       });
 
-      sendMail(
+      sendMailServices.sendMail(
         "Verifikasi bahwa ini anda",
         request.email,
         "Gagal verifikasi akun",

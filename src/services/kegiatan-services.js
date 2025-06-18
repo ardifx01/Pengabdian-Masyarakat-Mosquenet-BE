@@ -6,6 +6,7 @@ import mosqueServices from "./mosque-services.js";
 import path from 'path';
 import jwt from 'jsonwebtoken'
 import fileServices from "./file-services.js";
+import sendMailServices from "./send-mail-services.js";
 
 const createKegiatan = async (requestData, requestFiles) => {
   requestData = validate(createKegiatanSchema, requestData);
@@ -14,6 +15,26 @@ const createKegiatan = async (requestData, requestFiles) => {
   if(masjidId.status) {
     return masjidId;
   }
+
+  const masjid = await prismaClient.masjids.findFirst({
+    where: {
+      id: masjidId
+    }, 
+    select: {
+      name: true,
+    }
+  });
+
+  const user = await prismaClient.users.findMany({
+    where: {
+      jamaah: {
+        masjid_id: masjidId
+      }
+    },
+    select: {
+      email: true
+    }
+  });
   
   const documentPath = requestFiles?.document ? path.join('activity/documents', requestFiles.document[0].filename) : "";
   const imagePath = requestFiles?.image ? path.join('activity/images', requestFiles.image[0].filename) : "";
@@ -59,6 +80,31 @@ const createKegiatan = async (requestData, requestFiles) => {
         return mapActivityOutcome;
       }));
     }
+
+    const jamaah = user.map(value => value.email);
+    const url = `${process.env.MAIN_URL}kegiatan/${saveKegiatan.id}`;
+
+    sendMailServices.sendMultiMail(
+      `Kegiatan terbaru dari ${masjid.name}`,
+      jamaah,
+      "Gagal mengirimkan notifikasi kegiatan",
+      "kegiatan-notification.html",
+      [
+        {
+          key: "{{MASJID}}",
+          value: masjid.name
+        },
+        {
+          key: "{{JUDUL}}",
+          value: saveKegiatan.name
+        },
+        {
+          key: "{{LINK KEGIATAN}}",
+          value: url
+        }
+      ]
+    );
+
     return {
       message: "Kegiatan Masjid berhasil didata",
       status: 200
@@ -89,14 +135,34 @@ const getKegiatan = async (request) => {
       pic: true,
       address: true,
       image: true,
+      document: true,
+      description: true,
+      video_documentation: true,
+      Pengeluaran: {
+        select: {
+          outcomes: {
+            select: {
+              amount: true,
+              reason: true
+            }
+          }
+        }
+      }
     }
   });
 
-  if(kegiatanMasjid) {
+  const newKegiatanMasjid = kegiatanMasjid.map(val => {
+    const {Pengeluaran, ...kegiatanConvertObject} = val
+    const dataKegiatan = {...kegiatanConvertObject, outcomes: Pengeluaran.map(val => val.outcomes)};
+    return dataKegiatan;
+  })
+
+
+  if(newKegiatanMasjid) {
     return {
       message: "Kegiatan Masjid berhasil didapatkan",
       status: 200,
-      activity: kegiatanMasjid
+      activity: newKegiatanMasjid
     };
   } else {
     return {
@@ -333,5 +399,5 @@ export default {
   detailKegiatan,
   editKegiatan,
   deleteKegiatan,
-  currentByMasjidId
+  currentByMasjidId,
 }
