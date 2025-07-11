@@ -1,5 +1,5 @@
 import { prismaClient } from "../application/database.js";
-import { addCategorySchema, addIncomeSchema, getCategorySchema } from "../validation/pemasukan-validation.js"
+import { addCategorySchema, addIncomeSchema, deleteIncomeSchema, getCategorySchema, updateIncomeSchema } from "../validation/pemasukan-validation.js"
 import {validate} from "../validation/validation.js"
 import donationServices from "./donation-services.js";
 import mosqueServices from "./mosque-services.js";
@@ -125,6 +125,7 @@ const getIncome = async (request) => {
       masjid_id: masjidId
     },
     select: {
+      id: true,
       amount: true,
       date: true,
       source: true
@@ -144,9 +145,82 @@ const getIncome = async (request) => {
 
 }
 
+const updateIncome = async (request) => {
+  request = validate(updateIncomeSchema, request);
+  let updateData;
+  if(request.source_id) {
+    const source = await prismaClient.incomeSources.findFirst({ where: { id: request.source_id }});
+    const update = await prismaClient.incomes.update({
+      where: { id: request.id },
+      data: {
+        amount: request.amount,
+        source: source.name
+      }
+    });
+    updateData = update;
+  } else {
+    const incomes = await prismaClient.incomes.findFirst({
+      where: { id: request.id },
+      select: {
+        donations: true
+      }
+    });
+    if(incomes.donations) {
+      const donationsUpdate = await prismaClient.donation.update({
+        where: { id: incomes.donations.id },
+        data: { amount: request.amount }
+      });
+      if(!donationsUpdate) {
+        return {
+          message: "Data pemasukan gagal diubah!",
+          status: 400
+        };
+      }
+    }
+    const update = await prismaClient.incomes.update({
+      where: { id: request.id },
+      data: {
+        amount: request.amount,
+      }
+    });
+    updateData = update;
+  }
+  if(updateData) {
+    return {
+      message: "Data pemasukan berhasil diubah!",
+      status: 200
+    };
+  } else {
+    return {
+      message: "Data pemasukan gagal diubah!",
+      status: 400
+    };
+  }
+}
+
+const deleteIncome = async (request) => {
+  request = validate(deleteIncomeSchema, request);
+  
+  const donation = await prismaClient.donation.findMany({ where: { incomes_id: request.id }});
+  if(donation.length > 0) {
+    return {
+      message: "Data pemasukan ini tidak dapat dihapus! Memiliki hubungan dengan data donasi. Batalkan verifikasi terlebih dahulu",
+      status: 400,
+    };
+  }
+
+  await prismaClient.incomes.delete({ where: { id: request.id }});
+  return {
+    message: "Data pemasukan berhasil dihapus!",
+    status: 200
+  };
+}
+
 export default {
   addCategory,
   getCategory,
   addIncome,
-  getIncome
+  getIncome,
+  updateIncome,
+  deleteIncome
 }

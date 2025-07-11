@@ -9,6 +9,7 @@ import fileServices from "./file-services.js";
 import sendMailServices from "./send-mail-services.js";
 
 const createContent = async (requestData, requestFiles) => {
+  console.log("test");
   requestData = validate(createContentSchema, requestData);
   
   const masjidId = await mosqueServices.getMasjidId(requestData.user_id);

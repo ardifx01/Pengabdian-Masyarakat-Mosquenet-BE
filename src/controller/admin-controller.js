@@ -171,6 +171,7 @@ const checkKasPayment = async (req, res) => {
 
 const addContent = async (req, res) => {
   try {
+    console.log("test");
     const createContentResponse = await contentServices.createContent({ ...req.body, user_id: req.headers.authorization }, req.files);
     return res.status(createContentResponse.status).json(createContentResponse);
   } catch (e) {

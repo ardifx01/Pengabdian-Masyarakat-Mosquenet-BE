@@ -125,9 +125,6 @@ const verifyUser = async (request) => {
     where: {
       email: request.email,
     },
-    select: {
-      admin: true
-    }
   });
 
   

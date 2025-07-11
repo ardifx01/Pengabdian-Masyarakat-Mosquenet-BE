@@ -41,6 +41,8 @@ treasuryRouter.post('/pemasukan/category', treasuryController.addPemasukanCatego
 treasuryRouter.get('/pemasukan/category', treasuryController.getPemasukanCategory);
 treasuryRouter.post('/pemasukan', treasuryController.addPemasukan);
 treasuryRouter.get('/pemasukan', treasuryController.getPemasukan);
+treasuryRouter.delete('/pemasukan/:id', treasuryController.deletePemasukan);
+treasuryRouter.put('/pemasukan/:id', treasuryController.updatePemasukan);
 
 treasuryRouter.put('/pemasukan/mosque/:masjid_id/donation/:donation_id', treasuryController.updateDonation);
 
@@ -48,6 +50,8 @@ treasuryRouter.post('/pengeluaran/reason', treasuryController.addReasonPengeluar
 treasuryRouter.get('/pengeluaran/reason', treasuryController.getReasonPengeluaran);
 treasuryRouter.post('/pengeluaran', treasuryController.addPengeluaran);
 treasuryRouter.get('/pengeluaran', treasuryController.getPengeluaran);
+treasuryRouter.delete('/pengeluaran/:id', treasuryController.deletePengeluaran);
+treasuryRouter.put('/pengeluaran/:id', treasuryController.updatePengeluaran);
 
 treasuryRouter.get('/laporan', treasuryController.getReports);
 
@@ -58,6 +62,15 @@ treasuryRouter.post(
     maxCount: 1 
   }]),
   treasuryController.createAccountBank 
+);
+treasuryRouter.delete('/account-bank/:id', treasuryController.deleteAccountBank);
+treasuryRouter.put(
+  '/account-bank/:id',
+  upload.fields([{
+    name: 'image',
+    maxCount: 1
+  }]),
+  treasuryController.updateAccountBank
 );
 treasuryRouter.get('/account-bank', treasuryController.getAccountBank);
 treasuryRouter.post('/account-bank/purpose', treasuryController.createPurposeofAccountBank);

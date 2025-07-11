@@ -178,7 +178,7 @@ const create = async (request) => {
         data: {
           masjid_id: mosqueAdd.id,
           is_article_used: true,
-          is_donation_used: false,
+          is_donation_used: true,
           is_activity_outcomes_connected: false,
           is_asset_outcomes_connected: false,
           is_template_documents_used: false

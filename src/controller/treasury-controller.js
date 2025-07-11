@@ -52,6 +52,33 @@ const getPemasukan = async (req, res) => {
   }
 }
 
+const updatePemasukan = async (req, res) => {
+  try {
+    const id = req.params.id;
+    console.log("test");
+    const getOutcomeResponse = await pemasukanServices.updateIncome({ id, ...req.body });
+    return res.status(getOutcomeResponse.status).json(getOutcomeResponse);
+  } catch (e) {
+    console.log(e);
+    return res.status(500).json({
+      message: "Gagal mengubah data pengeluaran."
+    });
+  }
+}
+
+const deletePemasukan = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const getOutcomeResponse = await pemasukanServices.deleteIncome({ id });
+    return res.status(getOutcomeResponse.status).json(getOutcomeResponse);
+  } catch (e) {
+    console.log(e);
+    return res.status(500).json({
+      message: "Gagal menghapus data pengeluaran."
+    });
+  }
+}
+
 const addReasonPengeluaran = async (req, res) => {
   try {
     const reasonAddResponse = await pengeluaranServices.addReason({ ...req.body, user_id: req.headers.authorization });
@@ -96,6 +123,32 @@ const getPengeluaran = async (req, res) => {
     console.log(e);
     return res.status(500).json({
       message: "Gagal mendapatkan daftar pengeluaran."
+    });
+  }
+}
+
+const updatePengeluaran = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const getOutcomeResponse = await pengeluaranServices.updateOutcome({ id, ...req.body });
+    return res.status(getOutcomeResponse.status).json(getOutcomeResponse);
+  } catch (e) {
+    console.log(e);
+    return res.status(500).json({
+      message: "Gagal mengubah data pengeluaran."
+    });
+  }
+}
+
+const deletePengeluaran = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const getOutcomeResponse = await pengeluaranServices.deleteOutcome({ id });
+    return res.status(getOutcomeResponse.status).json(getOutcomeResponse);
+  } catch (e) {
+    console.log(e);
+    return res.status(500).json({
+      message: "Gagal menghapus data pengeluaran."
     });
   }
 }
@@ -148,6 +201,30 @@ const createAccountBank = async (req, res) => {
   }
 }
 
+const deleteAccountBank = async (req, res) => {
+  try {
+    const deleteAccountBankResponse = await accountBankServices.deleteAccount(req.params);
+    return res.status(deleteAccountBankResponse.status).json(deleteAccountBankResponse);
+  } catch (e) {
+    console.log(e);
+    return res.status(500).json({
+      message: "Gagal menghapus akun bank."
+    });
+  }
+}
+
+const updateAccountBank = async (req, res) => {
+  try {
+    const updateAccountBankResponse = await accountBankServices.updateAccount({...req.params, ...req.body}, req.files);
+    return res.status(updateAccountBankResponse.status).json(updateAccountBankResponse);
+  } catch (e) {
+    console.log(e);
+    return res.status(500).json({
+      message: "Gagal mengubah akun bank."
+    });
+  }
+}
+
 const getAccountBank = async (req, res) => {
   try {
     const getAccountBankResponse = await accountBankServices.getAccount(req.headers.authorization);
@@ -187,6 +264,12 @@ export default {
   createPurposeofAccountBank,
   getPurposeofAccountBank,
   createAccountBank,
+  deleteAccountBank,
+  updateAccountBank,
   getAccountBank,
-  updateDonation
+  updateDonation,
+  deletePengeluaran,
+  updatePengeluaran,
+  deletePemasukan,
+  updatePemasukan
 };

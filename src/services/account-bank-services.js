@@ -4,6 +4,7 @@ import accountBankValidation from "../validation/account-bank-validation.js"
 import { validate } from "../validation/validation.js"
 import mosqueServices from "./mosque-services.js";
 import jwt from 'jsonwebtoken';
+import fileServices from "./file-services.js";
 
 const createPurpose = async (request) => {
   request = validate(accountBankValidation.createPurposeSchema, request);
@@ -282,7 +283,85 @@ const saveDonation = async (request, requestFiles) => {
   } else {
     return {
       status: 500,
-      message: "Donasi gagal terdata dikarenakan kesalahan. Coba lagi!"
+      message: "Donasi gagal terdata dikarenakan kesalahan. Coba lagi"
+    }
+  }
+}
+
+const deleteAccount = async (request) => {
+  request = validate(accountBankValidation.deleteAccountSchema, request);
+
+  const account = await prismaClient.accountBank.findFirst({ where: { id: request.id }});
+  if(request.image) {
+    const deleteImage = fileServices.deleteFile(account.image);
+    if(deleteImage.status === 500) return deleteImage;
+  }
+
+  const deleteAccount = await prismaClient.accountBank.delete({
+    where: {
+      id: request.id
+    }
+  })
+  
+  if(deleteAccount) {
+    return {
+      message: "Berhasil menghapus rekening bank!",
+      status: 200
+    }
+  } else {
+    return {
+      message: "Gagal menghapus rekening bank. Coba lagi",
+      status: 500
+    }
+  }
+}
+
+const updateAccount = async (request, requestFiles) => {
+  request = validate(accountBankValidation.updateAccountSchema, request);
+  const account = await prismaClient.accountBank.findFirst({ where: { id: Number(request.id) }});
+  if(requestFiles.image && account.image) {
+    const deleteImage = fileServices.deleteFile(account.image);
+    if(deleteImage.status === 500) return deleteImage; 
+  }
+
+  const purpose = await prismaClient.purposeAccountBank.findFirst({
+    where: {
+      id: request.purpose_id
+    }
+  });
+  
+  if(purpose) {
+    const imagePath = requestFiles?.image ? path.join('transaction/images', requestFiles.image[0].filename) : account.image;
+
+    const saveAccount = await prismaClient.accountBank.update({
+      where: { id: Number(request.id) },
+      data: {
+        name: request.name,
+        bank: request.bank,
+        account: request.account,
+        alias_name: request.alias_name,
+        email: request.email,
+        masjid_id: purpose.masjid_id,
+        purpose: purpose.name,
+        image: imagePath
+      }
+    });
+    
+    if(saveAccount) {
+      return {
+        message: "Berhasil menambahkan rekening bank!",
+        status: 200
+      }
+    } else {
+      return {
+        message: "Gagal menambahkan rekening bank. Coba lagi",
+        status: 500
+      }
+    }
+  } else {
+    return {
+      message: "Gagal menambahkan rekening bank. Coba lagi",
+      status: 500
     }
   }
 }
@@ -294,5 +373,7 @@ export default {
   getAccount,
   getAccountWithHashedMasjidID,
   getDetailAccount,
-  saveDonation
+  saveDonation,
+  deleteAccount,
+  updateAccount
 }

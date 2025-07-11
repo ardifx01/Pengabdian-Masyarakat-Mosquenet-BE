@@ -1,6 +1,6 @@
 import { prismaClient } from "../application/database.js";
 import {validate} from "../validation/validation.js"
-import { addReasonSchema, getReasonSchema, addOutcomeSchema } from "../validation/pengeluaran-validation.js";
+import { addReasonSchema, getReasonSchema, addOutcomeSchema, deleteOutcomeSchema, updateOutcomeSchema } from "../validation/pengeluaran-validation.js";
 import mosqueServices from "./mosque-services.js";
 
 const addReason = async (request) => {
@@ -112,6 +112,7 @@ const getOutcome = async (request) => {
       masjid_id: masjidId
     },
     select: {
+      id: true,
       amount: true,
       date: true,
       reason: true,
@@ -139,9 +140,74 @@ const getOutcome = async (request) => {
 
 }
 
+const updateOutcome = async (request) => {
+  request = validate(updateOutcomeSchema, request);
+  
+  let updateData;
+  if(request.reason_id) {
+    const reason = await prismaClient.outcomeReason.findFirst({ where: { id: request.reason_id }});
+    const update = await prismaClient.outcomes.update({
+      where: { id: request.id },
+      data: {
+        amount: request.amount,
+        reason: reason.name
+      }
+    });
+    updateData = update;
+  } else {
+    const update = await prismaClient.outcomes.update({
+      where: { id: request.id },
+      data: {
+        amount: request.amount,
+      }
+    });
+    updateData = update;
+  }
+
+  if(updateData) {
+    return {
+      message: "Data pengeluaran berhasil diubah!",
+      status: 200
+    };
+  } else {
+    return {
+      message: "Data pengeluaran gagal diubah!",
+      status: 400
+    };
+  }
+}
+
+const deleteOutcome = async (request) => {
+  request = validate(deleteOutcomeSchema, request);
+  
+  const activity = await prismaClient.activityOutcomes.findMany({ where: { outcome_id: request.id }});
+  if(activity.length > 0) {
+    return {
+      message: "Data pengeluaran ini tidak dapat dihapus! Memiliki hubungan dengan data rincian kegiatan.",
+      status: 400,
+    };
+  }
+  
+  const asset = await prismaClient.assets.findMany({ where: { outcomes_id: request.id }});
+  if(asset.length > 0) {
+    return {
+      message: "Data pengeluaran ini tidak dapat dihapus! Memiliki hubungan dengan data aset.",
+      status: 400,
+    };
+  }
+
+  await prismaClient.outcomes.delete({ where: { id: request.id }});
+  return {
+    message: "Data pengeluaran berhasil dihapus!",
+    status: 200
+  };
+}
+
 export default {
   addReason,
   getReason,
   addOutcome,
-  getOutcome
+  getOutcome,
+  deleteOutcome,
+  updateOutcome
 }
