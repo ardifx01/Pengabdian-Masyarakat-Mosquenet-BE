@@ -181,7 +181,8 @@ const getAccountWithHashedMasjidID = async (request) => {
     },
     select: {
       id: true,
-      purpose: true
+      purpose: true,
+      bank: true
     }
   });
 

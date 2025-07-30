@@ -2,6 +2,7 @@ import nodemailer from 'nodemailer';
 import fs from 'fs';
 import { fileURLToPath } from "url";
 import path, { dirname } from 'path';
+import { ResponseError } from '../error/response-error.js';
 
 const sendMultiMail = (subject, email, errorMessage, tempFileName, contentReplace) => {
   const __filename = fileURLToPath(import.meta.url);
