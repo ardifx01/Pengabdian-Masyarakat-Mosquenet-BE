@@ -1,0 +1,22 @@
+# Environment variables declared in this file are automatically made available to Prisma.
+# See the documentation for more detail: https://pris.ly/d/prisma-schema#accessing-environment-variables-from-the-schema
+
+# Prisma supports the native connection string format for PostgreSQL, MySQL, SQLite, SQL Server, MongoDB and CockroachDB.
+# See the documentation for all the connection string options: https://pris.ly/d/connection-strings
+# "postgresql://postgres:kTyTEswhiaSPXsIokVMYncbOkdzgnCgc@shinkansen.proxy.rlwy.net:59717/railway"
+# SERVER CONFIGURATION
+DATABASE_URL="postgresql://postgres:root@localhost:5432/masjid?schema=public"
+HASH_SALT=b32d8d58374683f906695ce5e47d1207
+ROUND_SALT=10
+PORT=4000
+SECRET_KEY=eadministrasimasjidrahasiabanget!
+
+# EMAIL CONFIGURATION
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USER=helmiapriando01@gmail.com
+ACCOUNT_PASSWORD=Ha21042002
+
+# ANOTHER CONFIGURATION
+VERIFICATION_URL=http://localhost:3000/verify/
+MAIN_URL=http://localhost:3000/
